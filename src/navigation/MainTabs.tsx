@@ -1,89 +1,103 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { StyleSheet, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Screens
 import HomeScreen from '../screens/HomeScreen';
-import ProductListScreen from '../screens/ProductListScreen';
-import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
+// 💡 SOLUCIÓN: Mover el componente fuera de la función principal.
+// También se eliminó 'size' ya que no se estaba utilizando en el componente
+// y 'label' porque se comentó.
+const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
+    <View style={styles.footerIconWrapper}>
+        {/* Aquí usas 'color' pero no 'size', por eso eliminamos 'size' */}
+        <Icon name={name} size={40} color={color} />
+        {/* Si quieres la etiqueta de texto: <Text style={{ color }}>{label}</Text> */}
+    </View>
+);
+
 export default function MainTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#1D4ED8',
-        tabBarInactiveTintColor: '#6B7280',
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabLabel
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="home" size={size} color={color} />
-          ),
-          // Icono en el header
-          headerTitle: () => (
-            <Image
-              source={require('./../assets/images/logoIcon.png')}
-              style={{ width: 120, height: 40, resizeMode: 'contain' }}
+    return (
+        <Tab.Navigator
+            // ... (resto de screenOptions sin cambios importantes)
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: 'white',
+                tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
+                tabBarStyle: styles.tabBar,
+                tabBarShowLabel: false,
+            }}
+        >
+            <Tab.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                    // El `size` ya no es necesario pasarlo al componente custom
+                    tabBarIcon: ({ color }) => (
+                        <CustomTabIcon name="home" color={color} />
+                    ),
+                }}
             />
-          ),
-          headerTitleAlign: 'center',
-        }}
-      />
-      <Tab.Screen
-        name="Products"
-        component={ProductListScreen}
-        options={{
-          tabBarLabel: 'Products',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="storefront" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Cart"
-        component={CartScreen}
-        options={{
-          tabBarLabel: 'Cart',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="shopping-cart" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="face" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
+            <Tab.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <CustomTabIcon name="account" color={color} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Settings"
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <CustomTabIcon name="cog" color={color} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Logout"
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <CustomTabIcon name="exit-to-app" color={color} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
+    );
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    height: 60,
-    paddingBottom: 5,
-    paddingTop: 5,
-  },
-  tabLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
+    // ... (tus estilos aquí)
+    tabBar: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        borderTopWidth: 0,
+        height: 80,
+        width: 'auto',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -5 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        elevation: 20,
+    },
+    footerIconWrapper: {
+        alignItems: 'center',
+        padding: 5,
+    },
 });
