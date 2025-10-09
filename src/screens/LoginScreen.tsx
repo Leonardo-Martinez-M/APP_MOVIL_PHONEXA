@@ -188,7 +188,7 @@ export default function LoginScreen({ navigation }: any) {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, bounceAnim]);
 
   const FormAnimate = useRef(new Animated.Value(500)).current;
 
@@ -198,7 +198,7 @@ export default function LoginScreen({ navigation }: any) {
       duration: 600,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [FormAnimate]);
 
   return (
     <LinearGradient

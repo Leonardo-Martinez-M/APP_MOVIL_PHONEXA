@@ -3,7 +3,7 @@ import * as Keychain from 'react-native-keychain';
 
 // Instancia de Axios con la URL base jeje
 const httpClient = axios.create({
-    baseURL: 'http://10.0.2.2:3000/',
+    baseURL: 'http://192.168.100.81:3000/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',

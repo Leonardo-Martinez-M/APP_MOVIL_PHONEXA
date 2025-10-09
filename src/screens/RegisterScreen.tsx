@@ -19,7 +19,6 @@ import LinearGradient from 'react-native-linear-gradient';
 
 // Importamos la imagen de fondo y el logo
 const BackgroundAbstract = require('../assets/images/bg-image.png');
-const LogoImage = require('../assets/images/avion.png');
 
 // Colores del degradado principal
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
@@ -192,17 +191,17 @@ export default function RegisterScreen({ navigation }: any) {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, bounceAnim]);
 
   const FormAnimate = useRef(new Animated.Value(500)).current;
-
+  
   useEffect(() => {
     Animated.timing(FormAnimate, {
       toValue: 0,
       duration: 600,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [FormAnimate]);
 
   return (
     <LinearGradient
