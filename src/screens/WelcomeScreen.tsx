@@ -1,119 +1,175 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+const BackgroundAbstract = require('../assets/images/bg-image.png');
 
-const { width, height } = Dimensions.get('window');
 
 export default function WelcomeScreen({ navigation }: any) {
-  return (
-    
-    <ImageBackground 
-      source={require('./../assets/images/bg-image.png')}
-      style={styles.background}
+  const gradientColors = ['#00BF63', '#0A4C40'];
 
+  return (
+
+    <LinearGradient
+      colors={gradientColors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.fullScreen}
     >
-      <Text style={styles.welcomeText}>Bienvenido!</Text>
+      <Image
+        source={BackgroundAbstract}
+        resizeMode="cover"
+        style={styles.backgroundImage}
+      />
+
+
+      <Text style={styles.welcomeText}>PHONEXA</Text>
       <View style={styles.overlay}>
-        <Image
-          source={require('./../assets/images/avion.png')}
-          style={styles.logo}
-        />
         <View style={styles.container}>
+          <Image
+            source={require('./../assets/images/avion.png')}
+            style={styles.logo}
+            resizeMode='contain'
+          />
           <View style={styles.header}>
-            <Text style={styles.subtitle}>Aprende de forma rapida el alfabeto "AERONAUTICO"</Text>
+            <Text style={styles.subtitle}>Domina el Alfabeto Fonético Aeronáutico en tiempo récord</Text>
           </View>
+
           <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={[styles.button, styles.primaryButton]}
+            {/* 1. BOTÓN INICIAR SESIÓN */}
+            <TouchableOpacity
+              style={styles.secondaryButtonContainer} // Nuevo contenedor con borde/sombra
               onPress={() => navigation.navigate('Login')}
             >
-              <Text style={styles.buttonText}>Iniciar Sesión</Text>
+              <LinearGradient
+                // Degradado sutil (diferente al principal)
+                colors={['#17A868', '#00BF63']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.buttonGradient} // Relleno interno
+              >
+                <Text style={styles.buttonText}>Iniciar Sesión</Text>
+              </LinearGradient>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.button, styles.secondaryButton]}
+
+            {/* 2. BOTÓN REGISTRARSE */}
+            <TouchableOpacity
+              style={styles.primaryButtonContainer} // Nuevo contenedor con borde/sombra
               onPress={() => navigation.navigate('Register')}
             >
-              <Text style={[styles.buttonText, styles.secondaryButtonText]}>Registrarse</Text>
+              <LinearGradient
+                // Degradado principal del diseño
+                colors={['#00BF63', '#0A4C40']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.buttonGradient} // Relleno interno
+              >
+                <Text style={styles.buttonText}>Registrarse</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
+
         </View>
       </View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: width,
-    height: height,
+  fullScreen: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.9,
+    width: '100%',
+    height: '100%',
   },
   overlay: {
     flex: 1,
-    marginTop: '45%',
+    zIndex: 10,
+    marginTop: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
-    width: 120, 
-    height: 0, 
-    marginBottom: 20,
+    width: 200,
+    height: 200,
   },
   welcomeText: {
     position: 'absolute',
     top: 50,
     right: 20,
     color: 'white',
-    fontSize: 30,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontFamily: 'MontserratAlternates-Bold',
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
   },
   container: {
     width: '85%',
+    height: '90%',
     padding: 30,
     alignItems: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: 'black',
-    marginBottom: 10,
+    marginBottom: 50,
   },
   subtitle: {
     fontSize: 16,
+    fontFamily: 'MontserratAlternates-Medium',
     color: '#FFFFFF',
     textAlign: 'center',
   },
   buttonContainer: {
-    width: '100%',
-  },
-  button: {
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButton: {
-    backgroundColor: '#00cc66',
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#00cc66',
+    width: '90%',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
-  secondaryButtonText: {
-    color: 'black',
+  // Este estilo reemplaza el 'paddingVertical' y 'borderRadius' del estilo 'button' original.
+  buttonGradient: {
+    paddingVertical: 15,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+
+  // 2. CONTENEDOR PRIMARIO (REGISTRARME)
+  // Se aplica al TouchableOpacity. Define Borde y Sombra.
+  primaryButtonContainer: {
+    borderRadius: 22, // El mismo radio que tenías
+    marginBottom: 25, // El mismo margen que tenías
+    borderWidth: 2,
+    borderColor: 'rgba(247, 255, 252, 0.5)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 5, // Android
+    overflow: 'hidden',
+    color: 'white'
+  },
+
+  secondaryButtonContainer: {
+    borderRadius: 22,
+    marginBottom: 25,
+    borderWidth: 2,
+    borderColor: 'rgba(247, 255, 252, 0.5)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 5,
+    overflow: 'hidden',
   },
 });

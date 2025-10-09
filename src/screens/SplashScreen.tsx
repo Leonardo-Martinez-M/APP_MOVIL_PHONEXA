@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.2, 
+    opacity: 0.9, 
     width: '100%',
     height: '100%',
   },

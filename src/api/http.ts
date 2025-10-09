@@ -10,8 +10,6 @@ const httpClient = axios.create({
       },
   });
 
-  // --- Middleware (pa cada petición) ---
-
   httpClient.interceptors.request.use(
     async (config) => {
       try {
