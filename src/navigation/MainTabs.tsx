@@ -3,20 +3,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-// Screens
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
-// 💡 SOLUCIÓN: Mover el componente fuera de la función principal.
-// También se eliminó 'size' ya que no se estaba utilizando en el componente
-// y 'label' porque se comentó.
 const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     <View style={styles.footerIconWrapper}>
-        {/* Aquí usas 'color' pero no 'size', por eso eliminamos 'size' */}
         <Icon name={name} size={40} color={color} />
-        {/* Si quieres la etiqueta de texto: <Text style={{ color }}>{label}</Text> */}
     </View>
 );
 
