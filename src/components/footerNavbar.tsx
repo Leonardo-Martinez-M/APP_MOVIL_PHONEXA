@@ -11,9 +11,7 @@ const DESIGN_PROPS = {
   PADDING_HORIZONTAL: 20, // Añadido para espaciar los íconos
   BORDER_RADIUS: 16,
   BORDER_WIDTH: 1,
-  // Borde: #058252 con 32% de opacidad. Lo calcularemos como rgba
   BORDER_COLOR_RGB: 'rgba(5, 130, 82, 0.32)', 
-  // Sombra: #000000, 16% de opacidad, X: 0, Y: 2, Desenfoque: 8
   SHADOW_COLOR: 'rgba(0, 0, 0, 0.16)', 
   SHADOW_OFFSET_Y: 2,
   SHADOW_BLUR: 8,
@@ -27,7 +25,6 @@ const FooterIcon = ({ name, onPress }: any) => (
 );
 
 export default function FooterNavBar({ navigation }: any) {
-  // Hook para obtener los insets de la zona segura (ayuda con el notch inferior)
   const insets = useSafeAreaInsets();
 
   return (

@@ -10,24 +10,21 @@ import {
   //SafeAreaView // Añadido para manejar el área segura del notch
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+//import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderUno from '../components/headerUno';
 
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 const BackgroundAbstract = require('../assets/images/bg-image.png');
 
-const ButtonWithIcon = ({ icon, text, onPress }: any) => (
-  <TouchableOpacity style={styles.mainButton} onPress={onPress}>
-    <Icon name={icon} size={24} color="white" style={styles.mainButtonIcon} />
-    <Text style={styles.mainButtonText}>{text}</Text>
-  </TouchableOpacity>
-);
+// const ButtonWithIcon = ({ icon, text, onPress }: any) => (
+//   <TouchableOpacity style={styles.mainButton} onPress={onPress}>
+//     <Icon name={icon} size={24} color="white" style={styles.mainButtonIcon} />
+//     <Text style={styles.mainButtonText}>{text}</Text>
+//   </TouchableOpacity>
+// );
 
-
-// --- Componente Principal ---
-export default function HomeScreen({ navigation }: any) {
-  const userName = 'User'; // Nombre de usuario de ejemplo
+export default function HomeScreen() {
 
   return (
     <LinearGradient
@@ -50,19 +47,19 @@ export default function HomeScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Sección de Bienvenida */}
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>Bienvenido, {userName}</Text>
+          <Text style={styles.welcomeText}>Bienvenido</Text>
         </View>
 
         {/* Sección de Botones Principales */}
         <View style={styles.mainButtonSection}>
-          <ButtonWithIcon
+          {/* <ButtonWithIcon
             icon="book-open-variant"
             text="APRENDER EL ALFABETO"
             onPress={() => navigation.navigate('Alphabet')}
           />
 
           <ButtonWithIcon icon="microphone-outline" text="PRACTICAR PRONUNCIACIÓN" onPress={() => { }} />
-          <ButtonWithIcon icon="trophy-award" text="CUESTIONARIOS Y RETOS" onPress={() => { }} />
+          <ButtonWithIcon icon="trophy-award" text="CUESTIONARIOS Y RETOS" onPress={() => { }} /> */}
 
           <TouchableOpacity style={[styles.mainButton, styles.disabledButton]} disabled>
             <Text style={styles.mainButtonText}>PRÓXIMAMENTE...</Text>
