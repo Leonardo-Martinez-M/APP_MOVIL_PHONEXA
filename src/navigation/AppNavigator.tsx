@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainTabs from './MainTabs';
@@ -8,13 +8,15 @@ import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProductListScreen from '../screens/ProductListScreen';
+import CardScreen from '../screens/CardScreen';
+import QuizScreen from '../screens/QuizScreen';
 
 const Stack = createNativeStackNavigator();
 
 const loadCriticalResources = async () => {
-await new Promise(resolve => {
-    setTimeout(() => resolve(null), 2500); 
+  await new Promise(resolve => {
+    setTimeout(() => resolve(null), 2500);
   });
 };
 
@@ -32,12 +34,11 @@ export default function AppNavigator() {
     setIsAnimationComplete(true);
   };
 
-    const showSplash = isAppLoading || !isAnimationComplete;
+  const showSplash = isAppLoading || !isAnimationComplete;
 
   if (showSplash) {
     return <SplashScreen onAnimationEnd={handleAnimationEnd} />;
   }
-
 
   return (
     <NavigationContainer>
@@ -46,7 +47,9 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
-        <Stack.Screen name='Profile' component={ProfileScreen}/>
+        <Stack.Screen name="Prueba" component={ProductListScreen} />
+        <Stack.Screen name="Quiz" component={QuizScreen} />
+        <Stack.Screen name="Card" component={CardScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
