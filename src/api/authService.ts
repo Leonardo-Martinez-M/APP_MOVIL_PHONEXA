@@ -7,11 +7,6 @@ import { LoginRequest } from '../types/loginRequest.interface';
 import { RegisterResponse } from '../types/registerResponse.interface';
 import { LoginResponse } from '../types/loginResponse.interface';
 
-/**
- * Función para registrar un nuevo usuario
- * @param data - Datos del usuario para registro
- * @returns Promise<RegisterResponse> - Respuesta del servidor con datos del registro
- */
 const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
   try {
     console.log('Iniciando registro...');
@@ -89,7 +84,6 @@ const isLoggedIn = async (): Promise<boolean> => {
     return !!credentials;
   } catch (error) {
     console.error('❌ Error al verificar sesión (Keychain):', error);
-    // Si hay problemas con Keychain, asumir que no está logueado
     return false;
   }
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { COLORS } from '../constants/colors';
 import {
   View,
   Text,
@@ -21,7 +22,7 @@ import LinearGradient from 'react-native-linear-gradient';
 const BackgroundAbstract = require('../assets/images/bg-image.png');
 
 // Colores del degradado principal
-const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
+const GRADIENT_COLORS = [COLORS.greenBase, '#0A4C40'];
 
 export default function RegisterScreen({ navigation }: any) {
   // Estados del formulario
@@ -372,8 +373,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontFamily: 'MontserratAlternates-SemiBold',
-    color: 'black',
-    backgroundColor: 'white',
+    color: 'Black',
+    backgroundColor: COLORS.greenBase,
     marginTop: 20,
     marginBottom: 15,
     paddingLeft: 15,

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 const BackgroundAbstract = require('../assets/images/bg-image.png');
-
+import { COLORS } from '../constants/colors';
 
 export default function WelcomeScreen({ navigation }: any) {
   const gradientColors = ['#00BF63', '#0A4C40'];
@@ -21,7 +21,6 @@ export default function WelcomeScreen({ navigation }: any) {
         style={styles.backgroundImage}
       />
 
-
       <Text style={styles.welcomeText}>PHONEXA</Text>
       <View style={styles.overlay}>
         <View style={styles.container}>
@@ -31,7 +30,7 @@ export default function WelcomeScreen({ navigation }: any) {
             resizeMode='contain'
           />
           <View style={styles.header}>
-            <Text style={styles.subtitle}>Domina el Alfabeto Fonético Aeronáutico en tiempo récord</Text>
+            <Text style={styles.subtitle}>Domina el Alfabeto Aeronáutico en tiempo récord</Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -42,7 +41,7 @@ export default function WelcomeScreen({ navigation }: any) {
             >
               <LinearGradient
                 // Degradado sutil (diferente al principal)
-                colors={['#17A868', '#00BF63']}
+                colors={[COLORS.darkGreen, '#00BF63']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.buttonGradient} // Relleno interno
@@ -149,8 +148,8 @@ const styles = StyleSheet.create({
   primaryButtonContainer: {
     borderRadius: 22, // El mismo radio que tenías
     marginBottom: 25, // El mismo margen que tenías
-    borderWidth: 2,
-    borderColor: 'rgba(247, 255, 252, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 1)',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.16,
@@ -163,8 +162,8 @@ const styles = StyleSheet.create({
   secondaryButtonContainer: {
     borderRadius: 22,
     marginBottom: 25,
-    borderWidth: 2,
-    borderColor: 'rgba(247, 255, 252, 0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 1)',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.16,

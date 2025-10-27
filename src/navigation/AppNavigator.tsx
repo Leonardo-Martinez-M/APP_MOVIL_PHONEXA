@@ -8,6 +8,7 @@ import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +19,7 @@ await new Promise(resolve => {
 };
 
 export default function AppNavigator() {
-    const [isAppLoading, setIsAppLoading] = useState(true);
+  const [isAppLoading, setIsAppLoading] = useState(true);
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
   useEffect(() => {
@@ -44,9 +45,8 @@ export default function AppNavigator() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-
-        
         <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name='Profile' component={ProfileScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

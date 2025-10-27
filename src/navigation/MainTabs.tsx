@@ -1,97 +1,157 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Octicons';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
-const Tab = createBottomTabNavigator();
-
 const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     <View style={styles.footerIconWrapper}>
-        <Icon name={name} size={40} color={color} />
+        <Icon name={name} size={30} color={color} />
     </View>
 );
+
+const LogoutScreen = () => {
+    return null;
+};
+
+
+//const renderProfileIcon = ({ color }: { color: string }) => <CustomTabIcon name="person" color={color} />;
+const renderHomeIcon = ({ color }: { color: string }) => <CustomTabIcon name="home" color={color} />;
+const renderRachaIcon = ({ color }: { color: string }) => <CustomTabIcon name="flame" color={color} />;
+const renderLogoutIcon = ({ color }: { color: string }) => <CustomTabIcon name="sign-out" color={color} />;
+
+const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
     return (
         <Tab.Navigator
-            // ... (resto de screenOptions sin cambios importantes)
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: 'white',
-                tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.6)',
-                tabBarStyle: styles.tabBar,
-                tabBarShowLabel: false,
+                tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.7)',
             }}
+            tabBar={MyCustomTabBar}
         >
+            {/* <Tab.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    tabBarLabel: 'Person',
+                    tabBarIcon: renderProfileIcon,
+                }}
+            /> */}
+            <Tab.Screen
+                name="Racha"
+                component={ProfileScreen}
+                options={{
+                    tabBarLabel: 'Flame',
+                    tabBarIcon: renderRachaIcon,
+                }}
+            />
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    // El `size` ya no es necesario pasarlo al componente custom
-                    tabBarIcon: ({ color }) => (
-                        <CustomTabIcon name="home" color={color} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <CustomTabIcon name="account" color={color} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Settings"
-                component={ProfileScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <CustomTabIcon name="cog" color={color} />
-                    ),
+                    tabBarLabel: 'Home',
+                    tabBarIcon: renderHomeIcon,
                 }}
             />
             <Tab.Screen
                 name="Logout"
-                component={ProfileScreen}
+                component={LogoutScreen}
                 options={{
-                    tabBarIcon: ({ color }) => (
-                        <CustomTabIcon name="exit-to-app" color={color} />
-                    ),
+                    tabBarLabel: 'Logout',
+                    tabBarIcon: renderLogoutIcon,
                 }}
             />
         </Tab.Navigator>
     );
 }
 
+function MyCustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+    return (
+        <View style={styles.tabBarContainer}>
+            {state.routes.map((route, index) => {
+                const { options } = descriptors[route.key];
+                const isFocused = state.index === index;
+
+                const onPress = () => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: route.key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!isFocused && !event.defaultPrevented) {
+                        navigation.navigate(route.name);
+                    }
+                };
+
+                const onLongPress = () => {
+                    navigation.emit({
+                        type: 'tabLongPress',
+                        target: route.key,
+                    });
+                };
+
+                const icon = options.tabBarIcon ? options.tabBarIcon({
+                    focused: isFocused,
+                    color: isFocused ? 'white' : 'rgba(255, 255, 255, 0.7)',
+                    size: 30
+                }) : null;
+
+                return (
+                    <TouchableOpacity
+                        key={route.key}
+                        accessibilityRole="button"
+                        accessibilityState={isFocused ? { selected: true } : {}}
+                        onPress={onPress}
+                        onLongPress={onLongPress}
+                        style={styles.tabButton}
+                    >
+                        {icon}
+                    </TouchableOpacity>
+                );
+            })}
+        </View>
+    );
+}
+
+
 const styles = StyleSheet.create({
-    // ... (tus estilos aquí)
-    tabBar: {
+    tabBarContainer: {
         position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
+        bottom: 30,
+        left: 45,
+        right: 45,
+        backgroundColor: 'rgba(18, 45, 35, 0.9)',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(112, 153, 137, 0.9)',
+        height: '9%',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingVertical: 15,
+        alignItems: 'center',
         paddingHorizontal: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        borderTopWidth: 0,
-        height: 80,
-        width: 'auto',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -5 },
-        shadowOpacity: 0.5,
-        shadowRadius: 10,
-        elevation: 20,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.16,
+        shadowRadius: 8,
+        elevation: 5,
     },
     footerIconWrapper: {
         alignItems: 'center',
-        padding: 5,
+        justifyContent: 'center',
     },
+    tabButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+    }
 });
+
