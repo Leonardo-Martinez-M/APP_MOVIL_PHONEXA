@@ -4,6 +4,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
 import HomeScreen from '../screens/HomeScreen';
 import CardScreen from '../screens/CardScreen';
+import LogoutScreen from '../screens/LogoutScreen';
 
 const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     <View style={styles.footerIconWrapper}>
@@ -11,9 +12,6 @@ const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     </View>
 );
 
-const LogoutScreen = () => {
-    return null;
-};
 
 
 //const renderProfileIcon = ({ color }: { color: string }) => <CustomTabIcon name="person" color={color} />;
@@ -24,6 +22,7 @@ const renderLogoutIcon = ({ color }: { color: string }) => <CustomTabIcon name="
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -61,7 +60,7 @@ export default function MainTabs() {
                 name="Logout"
                 component={LogoutScreen}
                 options={{
-                    tabBarLabel: 'Logout',
+                    tabBarLabel: 'Salir',
                     tabBarIcon: renderLogoutIcon,
                 }}
             />

@@ -205,7 +205,7 @@ export default function LoginScreen({ navigation }: any) {
       colors={GRADIENT_COLORS}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.fullScreen} // Usamos fullScreen del RegisterScreen
+      style={styles.fullScreen}
     >
       <Image
         source={BackgroundAbstract}
@@ -213,7 +213,7 @@ export default function LoginScreen({ navigation }: any) {
         style={styles.backgroundImage}
       />
       <KeyboardAvoidingView
-        style={styles.overlay} // Usamos overlay para centrar y padding
+        style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Animated.View

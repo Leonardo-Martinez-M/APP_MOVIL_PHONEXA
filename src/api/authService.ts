@@ -88,5 +88,19 @@ const isLoggedIn = async (): Promise<boolean> => {
   }
 };
 
+/**
+ * Función para obtener el token guardado
+ * @returns Promise<string | null> - token o null si no existe
+ */
+const getToken = async (): Promise<string | null> => {
+  try {
+    const credentials = await Keychain.getGenericPassword();
+    return credentials ? credentials.password : null;
+  } catch (error) {
+    console.error('❌ Error al obtener token del Keychain:', error);
+    return null;
+  }
+};
+
 // Exportamos las funciones
-export { register, login, logout, isLoggedIn };
+export { register, login, logout, isLoggedIn, getToken };
