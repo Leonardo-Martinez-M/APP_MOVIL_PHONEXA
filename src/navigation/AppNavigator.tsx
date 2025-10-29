@@ -82,7 +82,7 @@ export default function AppNavigator() {
 
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {userLogged ? (
+          {userLogged ?  (
             // 👇 Si ya hay sesión, saltamos Login/Welcome/Register
             <>
               <Stack.Screen name="MainTabs" component={MainTabs} />
