@@ -1,13 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-// Si tus SVGs son componentes, la importación sería algo así:
-// import AirplaneIcon from '../assets/icons/airplane.svg'; 
-// import LetterAIcon from '../assets/icons/letter_a.svg'; 
-import SoundIcon from 'react-native-vector-icons/MaterialCommunityIcons'; // Para el icono de sonido
+import SoundIcon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 
-// --- Componente AlphabetCard ---
 interface AlphabetCardProps {
-    topIcon: React.ReactNode; // Puede ser un componente SVG o cualquier otro elemento React
+    topIcon: React.ReactNode; 
     letter: string;
     name: string;
     onPressSound: () => void;
@@ -37,15 +33,14 @@ const AlphabetCard = ({ topIcon, letter, name, onPressSound }: AlphabetCardProps
 
 const styles = StyleSheet.create({
     card: {
-        // Estilos para la card, basados en tu botón pero ajustados
         width: 180, // Ancho fijo para las cards del carrusel
         height: 240, // Altura fija
-        backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fondo translúcido oscuro
+        backgroundColor: 'red', // Fondo translúcido oscuro
         borderRadius: 20, // Bordes redondeados
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.3)', // Borde claro
         marginHorizontal: 10, // Espacio entre cards en el carrusel
-        padding: 20,
+        padding: 40,
         alignItems: 'center',
         justifyContent: 'space-around', // Distribuye el espacio uniformemente
     },

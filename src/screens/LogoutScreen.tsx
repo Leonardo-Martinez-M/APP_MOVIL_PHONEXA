@@ -1,12 +1,12 @@
 import * as React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import HeaderDos from '../components/headerDos';
-import * as Keychain from 'react-native-keychain';
-import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAuth } from '../navigation/AppNavigator';
 
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 const BackgroundAbstract = require('../assets/images/bg-image.png');
@@ -17,14 +17,11 @@ type LogoutScreenNavigationProp = NativeStackNavigationProp<
 
 export default function LogoutScreen() {
   const navigation = useNavigation<LogoutScreenNavigationProp>();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await Keychain.resetGenericPassword();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
+      await signOut();
     } catch (error) {
       console.error('Error cerrando sesión:', error);
       Alert.alert('Error', 'No se pudo cerrar la sesión correctamente.');
@@ -61,7 +58,7 @@ export default function LogoutScreen() {
 
       <View style={styles.content}>
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>¿Deseas cerrar sesión?</Text>
+          <Text style={styles.LogOutText}>¿Deseas cerrar sesión?</Text>
           <Text style={styles.subText}>
             Si sales, necesitarás iniciar sesión nuevamente para acceder a tu cuenta.
           </Text>
@@ -107,14 +104,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 60,
   },
-  welcomeText: {
+  LogOutText: {
     fontSize: 28,
+    textAlign: 'center',
     fontFamily: 'MontserratAlternates-SemiBold',
     color: 'white',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    marginBottom: 15,
+    marginBottom: 60,
   },
   subText: {
     fontSize: 16,

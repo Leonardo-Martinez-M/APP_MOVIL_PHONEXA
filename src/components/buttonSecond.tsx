@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: 'MontserratAlternates-SemiBold'
     },
     //Boton Proximamente 
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     },
     disabledButtonText: {
         color: 'rgba(255, 255, 255, 0.5)',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '600',
         textAlign: 'center',
     }

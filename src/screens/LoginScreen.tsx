@@ -13,9 +13,8 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { login } from '../api/authService';
+import { useAuth } from '../navigation/AppNavigator';
 import { LoginRequest } from '../types/loginRequest.interface';
-// 💡 Necesitas importar LinearGradient para el fondo
 import LinearGradient from 'react-native-linear-gradient';
 
 // Importamos la imagen de fondo y el logo (Asegúrate de que estas rutas sean correctas)
@@ -26,6 +25,7 @@ const LogoImage = require('../assets/images/avion.png'); // Usaré 'avion.png' c
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 
 export default function LoginScreen({ navigation }: any) {
+  const { signIn } = useAuth();
   // Estados del formulario
   const [formData, setFormData] = useState<LoginRequest>({
     email: '',
@@ -93,7 +93,7 @@ export default function LoginScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      await login(formData);
+      await signIn(formData);
       console.log('✅ Login exitoso, navegando a MainTabs...');
 
       // Mostrar mensaje de éxito y navegar
@@ -101,7 +101,6 @@ export default function LoginScreen({ navigation }: any) {
         ToastAndroid.show('¡Bienvenido de nuevo!', ToastAndroid.SHORT);
       }
 
-      navigation.replace('MainTabs');
     } catch (error: any) {
       console.error('Error en login:', error);
 

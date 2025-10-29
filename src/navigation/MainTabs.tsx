@@ -3,8 +3,9 @@ import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/b
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
 import HomeScreen from '../screens/HomeScreen';
-import CardScreen from '../screens/CardScreen';
+//import CardScreen from '../screens/CardScreen';
 import LogoutScreen from '../screens/LogoutScreen';
+import CardScreen from '../screens/CardScreen';
 
 const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     <View style={styles.footerIconWrapper}>
