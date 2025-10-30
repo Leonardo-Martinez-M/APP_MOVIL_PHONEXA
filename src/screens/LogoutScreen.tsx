@@ -2,11 +2,11 @@ import * as React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import HeaderDos from '../components/headerDos';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../navigation/AppNavigator';
+import HeaderUno from '../components/headerUno';
 
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 const BackgroundAbstract = require('../assets/images/bg-image.png');
@@ -53,7 +53,7 @@ export default function LogoutScreen() {
       />
 
       <SafeAreaView>
-        <HeaderDos />
+        <HeaderUno />
       </SafeAreaView>
 
       <View style={styles.content}>
@@ -134,10 +134,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom:100
   },
   cancelButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: '#0A4C40',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
+
   logoutButton: {
     backgroundColor: '#E53935',
   },

@@ -3,9 +3,8 @@ import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/b
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
 import HomeScreen from '../screens/HomeScreen';
-//import CardScreen from '../screens/CardScreen';
 import LogoutScreen from '../screens/LogoutScreen';
-import CardScreen from '../screens/CardScreen';
+import StreakScreen from '../screens/RachaScreen';
 
 const CustomTabIcon = ({ name, color }: { name: string, color: string }) => (
     <View style={styles.footerIconWrapper}>
@@ -33,28 +32,20 @@ export default function MainTabs() {
             }}
             tabBar={MyCustomTabBar}
         >
-            {/* <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{
-                    tabBarLabel: 'Person',
-                    tabBarIcon: renderProfileIcon,
-                }}
-            /> */}
-            <Tab.Screen
-                name="Racha"
-                component={CardScreen}
-                options={{
-                    tabBarLabel: 'Flame',
-                    tabBarIcon: renderRachaIcon,
-                }}
-            />
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
                     tabBarLabel: 'Home',
                     tabBarIcon: renderHomeIcon,
+                }}
+            />
+            <Tab.Screen
+                name="Racha"
+                component={StreakScreen}
+                options={{
+                    tabBarLabel: 'Flame',
+                    tabBarIcon: renderRachaIcon,
                 }}
             />
             <Tab.Screen

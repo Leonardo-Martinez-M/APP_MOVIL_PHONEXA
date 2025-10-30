@@ -1,44 +1,62 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  SafeAreaView, 
+  TouchableOpacity, 
+  StatusBar 
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Importa el hook
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const MenuButton = ({ title, iconName }: { title: string, iconName: string }) => (
-    <TouchableOpacity style={styles.button}>
-        <Icon name={iconName} size={28} color="#FFFFFF" style={styles.icon} />
-        <Text style={styles.buttonText}>{title}</Text>
-    </TouchableOpacity>
+import { RootStackParamList } from '../types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+// Modifica MenuButton para aceptar una prop `onPress`
+const MenuButton = ({ 
+  title, 
+  iconName, 
+  onPress 
+}: { 
+  title: string; 
+  iconName: string;
+  onPress: () => void;
+}) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Icon name={iconName} size={28} color="#FFFFFF" style={styles.icon} />
+    <Text style={styles.buttonText}>{title}</Text>
+  </TouchableOpacity>
 );
 
 function ButtonMenu() {
-    return (
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="light-content" />
-            <View style={styles.container}>
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+const navigation = useNavigation<NavigationProp>();
 
-                <View style={styles.menuContainer}>
-                    <MenuButton
-                        title="APRENDER EL ALFABETO"
-                        iconName="book-open-variant"
-                    />
-                    {/* <MenuButton 
-                        title="PRACTICAR PRONUNCIACIÓN" 
-                        iconName="account-voice" 
-                    /> */}
-                    <MenuButton
-                        title="CUESTIONARIOS Y RETOS"
-                        iconName="trophy-outline"
-                    />
-                </View>
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.container}>
+        <View style={styles.menuContainer}>
+          <MenuButton
+            title="APRENDER EL ALFABETO"
+            iconName="book-open-variant"
+            onPress={() => navigation.navigate('Card')} // Navega a CardScreen
+          />
+          <MenuButton
+            title="CUESTIONARIOS Y RETOS"
+            iconName="trophy-outline"
+            onPress={() => navigation.navigate('Quiz')} // Ejemplo para otra pantalla
+          />
+        </View>
 
-                {/* Este es el botón "PRÓXIMAMENTE" que se ve en tu imagen */}
-                <View style={[styles.button, styles.disabledButton]}>
-                    <Text style={styles.disabledButtonText}>PRÓXIMAMENTE...</Text>
-                </View>
-
-            </View>
-        </SafeAreaView>
-    );
+        <View style={[styles.button, styles.disabledButton]}>
+          <Text style={styles.disabledButtonText}>PRÓXIMAMENTE...</Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
 }
+
+// Los estilos se mantienen igual...
 
 const styles = StyleSheet.create({
     safeArea: {

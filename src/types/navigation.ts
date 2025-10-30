@@ -6,5 +6,7 @@ export type RootStackParamList = {
   Prueba: undefined;
   Quiz: undefined;
   Card: undefined;
+  Racha: undefined;
+  Home: undefined;
   Logout: undefined; 
 };

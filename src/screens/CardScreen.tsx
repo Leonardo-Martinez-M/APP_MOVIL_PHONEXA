@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,14 +16,15 @@ import HeaderDos from '../components/headerDos';
 import httpClient from '../api/http';
 import Sound from 'react-native-sound';
 import { SvgUri } from 'react-native-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const STORAGE_KEY = '@AlphabetData';
 const { width: screenWidth } = Dimensions.get('window');
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 const BackgroundAbstract = require('../assets/images/bg-image.png');
 
 Sound.setCategory('Playback');
 
-// --- Tipos ---
 type AlphabetCardType = {
   id: number;
   text: string;
@@ -37,7 +38,9 @@ type ApiResponse = {
   data: AlphabetCardType[];
 };
 
-// --- Componente de Tarjeta Integrado ---
+// Contador global de solicitudes
+let apiRequestCount = 0;
+
 const AlphabetCardIntegrated = ({
   card,
   onPlayAudio,
@@ -49,8 +52,6 @@ const AlphabetCardIntegrated = ({
   isPlaying: boolean;
   disabled: boolean;
 }) => {
-  console.log(`[CARD ${card.id}] Renderizando - Imagen: ${card.imageUrl}`);
-
   return (
     <View style={cardStyles.card}>
       <View style={cardStyles.iconContainer}>
@@ -59,7 +60,6 @@ const AlphabetCardIntegrated = ({
           width="60%"
           height="60%"
           onError={(e) => console.log(`[CARD ${card.id}] Error cargando imagen:`, e)}
-          onLoad={() => console.log(`[CARD ${card.id}] Imagen cargada exitosamente`)}
         />
       </View>
 
@@ -86,10 +86,11 @@ const AlphabetCardIntegrated = ({
   );
 };
 
-// --- Estilos de la Tarjeta ---
 const cardStyles = StyleSheet.create({
   card: {
-    width: screenWidth * 0.8, // 80% del ancho de pantalla
+    marginTop:'1.3%',
+    width: screenWidth * 0.8,
+    height: '100%',
     backgroundColor: 'white',
     borderRadius: 30,
     padding: 20,
@@ -98,50 +99,56 @@ const cardStyles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+    marginHorizontal: (screenWidth * 0.2) / 4,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
-    marginHorizontal: (screenWidth * 0.2) / 4, // Esto centra la card - 20% restante dividido entre los márgenes
+    borderColor: '#0a4c40f3',
   },
   iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 220,
+    height: 140,
+    borderRadius: 30,
     backgroundColor: '#0A4C40',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#00BF63',
+    borderColor: '#21392eff',
   },
   letter: {
-    fontSize: 48,
+    fontSize: 60,
     fontFamily: 'MontserratAlternates-Bold',
     color: '#0A4C40',
     marginBottom: 5,
     marginTop: 10,
   },
   code: {
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: 'MontserratAlternates-SemiBold',
     color: '#333',
     marginBottom: 10,
     textAlign: 'center'
   },
   pronunciation: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: 'MontserratAlternates-Regular',
-    color: '#666',
+    color: '#000000ff',
     fontStyle: 'italic',
-    marginBottom: 20,
+    marginBottom: 40,
     textAlign: 'center'
   },
   audioButton: {
-    backgroundColor: '#00BF63',
+    //backgroundColor: '#00BF63',
     paddingHorizontal: 25,
-    paddingVertical: 12,
+    paddingVertical: 20,
     borderRadius: 25,
     elevation: 5,
     minWidth: 200,
+    marginLeft:30,
+    marginRight: 30,
     alignItems: 'center',
+    backgroundColor: '#0A4C40',
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)'
   },
   audioButtonPlaying: {
     backgroundColor: '#FFA500',
@@ -153,59 +160,46 @@ const cardStyles = StyleSheet.create({
   audioButtonText: {
     color: 'white',
     fontFamily: 'MontserratAlternates-SemiBold',
-    fontSize: 16,
+    fontSize: 15,
     textAlign: 'center'
   },
 });
 
-// --- Componente Principal de la Pantalla ---
 export default function CardScreen() {
   const [alphabetData, setAlphabetData] = useState<AlphabetCardType[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
   const [audioDisabled, setAudioDisabled] = useState(false);
+  const hasLoadedData = useRef(false);
 
-  // Función para manejar la reproducción de audio
   const handlePlayAudio = useCallback(async (audioUrl: string, cardId: number) => {
-    console.log(`[AUDIO] Botón presionado - Card ID: ${cardId}, URL: ${audioUrl}`);
-
-    if (audioDisabled) {
-      console.log(`[AUDIO] Audio deshabilitado, ignorando click`);
-      return;
-    }
+    if (audioDisabled) return;
 
     if (!audioUrl) {
       Alert.alert('Error', 'No hay URL de audio disponible');
       return;
     }
 
-    // Deshabilitar todos los botones y marcar como reproduciendo
     setAudioDisabled(true);
     setCurrentlyPlaying(cardId);
-
-    console.log(`[AUDIO] Iniciando reproducción para card ${cardId}`);
 
     try {
       const sound = new Sound(audioUrl, '', (error) => {
         if (error) {
-          console.error(`[AUDIO] Error al cargar sonido para card ${cardId}:`, error);
+          console.error(`[AUDIO] Error al cargar sonido:`, error);
           Alert.alert('Error', 'No se pudo cargar el audio');
           setCurrentlyPlaying(null);
           setAudioDisabled(false);
           return;
         }
 
-        console.log(`[AUDIO] Audio cargado correctamente, reproduciendo...`);
-
         sound.play((success) => {
           if (success) {
-            console.log(`[AUDIO] Audio reproducido correctamente para card ${cardId}`);
+            console.log(`[AUDIO] Audio reproducido correctamente`);
           } else {
-            console.warn(`[AUDIO] Error al reproducir sonido para card ${cardId}`);
             Alert.alert('Error', 'No se pudo reproducir el audio');
           }
 
-          // Limpiar estado después de la reproducción
           setCurrentlyPlaying(null);
           setAudioDisabled(false);
           sound.release();
@@ -213,33 +207,45 @@ export default function CardScreen() {
       });
     } catch (error) {
       console.error(`[AUDIO] Error inesperado:`, error);
-      Alert.alert('Error', 'Ocurrió un error inesperado');
       setCurrentlyPlaying(null);
       setAudioDisabled(false);
     }
   }, [audioDisabled]);
 
-  // Función para obtener datos
   const fetchAlphabetData = useCallback(async () => {
+    // Evitar múltiples solicitudes
+    if (hasLoadedData.current) {
+      console.log('[CACHE] Los datos ya están cargados, evitando solicitud redundante');
+      return;
+    }
+
     try {
       setLoading(true);
-      console.log('[API] Solicitando datos de la API...');
+
+      // Intentar cargar desde caché local primero
+      const storedData = await AsyncStorage.getItem(STORAGE_KEY);
+      if (storedData) {
+        const parsedData: AlphabetCardType[] = JSON.parse(storedData);
+        console.log('[CACHE] Datos cargados desde caché local:', parsedData.length, 'elementos');
+        setAlphabetData(parsedData);
+        hasLoadedData.current = true;
+        setLoading(false);
+        return;
+      }
+
+      // Solo hacer solicitud a API si no hay datos en caché
+      apiRequestCount++;
+      console.log(`[API] Realizando solicitud a la API (#${apiRequestCount})...`);
 
       const response = await httpClient.get<ApiResponse>('/aeronautical-alphabet');
 
       if (response.data.success) {
         const data = response.data.data || [];
-        console.log('[API] Datos recibidos:', data.length, 'elementos');
+        console.log(`[API] Datos recibidos exitosamente:`, data.length, 'elementos');
 
-        // Log detallado de cada elemento
-        data.forEach(item => {
-          console.log(`[API] Item ${item.id}:`, {
-            text: item.text,
-            imageUrl: item.imageUrl,
-            audioUrl: item.audioUrl,
-            pronunciation: item.pronunciation
-          });
-        });
+        // Guardar en caché local para futuras sesiones
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        hasLoadedData.current = true;
 
         setAlphabetData(data);
       } else {
@@ -247,14 +253,20 @@ export default function CardScreen() {
         setAlphabetData([]);
       }
     } catch (error: any) {
-      console.error('[API] Error al obtener datos:', error);
-      console.error('[API] Detalles del error:', error.response?.data || error.message);
+      console.error('[FETCH] Error al obtener datos:', error);
       Alert.alert('Error', 'No se pudieron cargar los datos del alfabeto');
       setAlphabetData([]);
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const handleRetry = useCallback(() => {
+    // Forzar recarga limpiando caché y resetear flag
+    AsyncStorage.removeItem(STORAGE_KEY);
+    hasLoadedData.current = false;
+    fetchAlphabetData();
+  }, [fetchAlphabetData]);
 
   useEffect(() => {
     fetchAlphabetData();
@@ -287,7 +299,7 @@ export default function CardScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             pagingEnabled
-            snapToInterval={screenWidth} // Esto es clave - usa el ancho completo de pantalla
+            snapToInterval={screenWidth}
             snapToAlignment="center"
             decelerationRate="fast"
           >
@@ -306,7 +318,7 @@ export default function CardScreen() {
             <Text style={styles.errorText}>No se pudieron cargar los datos</Text>
             <TouchableOpacity
               style={styles.retryButton}
-              onPress={fetchAlphabetData}
+              onPress={handleRetry}
             >
               <Text style={styles.retryButtonText}>Reintentar</Text>
             </TouchableOpacity>
@@ -317,7 +329,6 @@ export default function CardScreen() {
   );
 }
 
-// --- Estilos de la Pantalla ---
 const styles = StyleSheet.create({
   fullScreen: { flex: 1 },
   safeArea: { zIndex: 10, flex: 1 },
@@ -325,7 +336,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: 'center',
     paddingBottom: 150,
-    // Padding horizontal calculado para centrado perfecto
     paddingHorizontal: (screenWidth - (screenWidth * 0.8)) / 2,
   },
   loadingContainer: {

@@ -4,16 +4,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainTabs from './MainTabs';
 import SplashScreen from '../screens/SplashScreen';
 import { isLoggedIn, login, logout } from '../api/authService';
-// Screens de autenticación
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import ProductListScreen from '../screens/ProductListScreen';
 import QuizScreen from '../screens/QuizScreen';
 import LogoutScreen from '../screens/LogoutScreen';
 import { RootStackParamList } from '../types/navigation';
 import { LoginRequest } from '../types/loginRequest.interface';
-//import CardScreen from '../screens/CardScreen';
+import CardScreen from '../screens/CardScreen';
+import StreakScreen from '../screens/RachaScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 
 type AuthContextType = {
@@ -82,13 +82,16 @@ export default function AppNavigator() {
 
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {userLogged ?  (
+          {userLogged ? (
             // 👇 Si ya hay sesión, saltamos Login/Welcome/Register
             <>
               <Stack.Screen name="MainTabs" component={MainTabs} />
-              <Stack.Screen name="Prueba" component={ProductListScreen} />
+              <Stack.Screen name="Home" component={HomeScreen} />
               <Stack.Screen name="Quiz" component={QuizScreen} />
               <Stack.Screen name='Logout' component={LogoutScreen} />
+              <Stack.Screen name='Racha' component={StreakScreen} />
+              <Stack.Screen name='Card' component={CardScreen} />
+
             </>
           ) : (
             // 👇 Si no hay sesión, mostramos pantallas de autenticación
