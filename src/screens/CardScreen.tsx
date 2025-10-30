@@ -1,219 +1,264 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-  Dimensions,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Sound from 'react-native-sound';
 import HeaderDos from '../components/headerDos';
 import httpClient from '../api/http';
+import Sound from 'react-native-sound';
+import { SvgUri } from 'react-native-svg';
 
+const { width: screenWidth } = Dimensions.get('window');
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
 const BackgroundAbstract = require('../assets/images/bg-image.png');
-const { width: screenWidth } = Dimensions.get('window');
 
-// Configurar react-native-sound
 Sound.setCategory('Playback');
 
-type AlphabetCard = {
+// --- Tipos ---
+type AlphabetCardType = {
   id: number;
   text: string;
   pronunciation: string;
   audioUrl: string;
-  imageUrl: string; // Esta es la URL de la imagen desde la API
+  imageUrl: string;
 };
 
 type ApiResponse = {
   success: boolean;
-  data: AlphabetCard[];
+  data: AlphabetCardType[];
 };
 
-type AlphabetCardProps = {
-  card: AlphabetCard;
-  onPlayAudio: (audioUrl: string, cardId: number) => Promise<void>;
+// --- Componente de Tarjeta Integrado ---
+const AlphabetCardIntegrated = ({
+  card,
+  onPlayAudio,
+  isPlaying,
+  disabled
+}: {
+  card: AlphabetCardType;
+  onPlayAudio: (audioUrl: string, cardId: number) => void;
   isPlaying: boolean;
-};
-
-// --- Componente hijo ACTUALIZADO para imágenes desde API ---
-const AlphabetCardComponent = ({ card, onPlayAudio, isPlaying }: AlphabetCardProps) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-
-  // URL completa de la imagen desde la API
-  const imageUrl = card.imageUrl;
-
-  console.log(`Card: ${card.text}, ImageURL: ${imageUrl}`);
+  disabled: boolean;
+}) => {
+  console.log(`[CARD ${card.id}] Renderizando - Imagen: ${card.imageUrl}`);
 
   return (
-    <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        {imageUrl && !imageError ? (
-          <>
-            <Image 
-              source={{ uri: imageUrl }} 
-              style={styles.icon} 
-              resizeMode="contain"
-              onLoadStart={() => setImageLoading(true)}
-              onLoadEnd={() => setImageLoading(false)}
-              onError={() => {
-                console.log('Error cargando imagen desde:', imageUrl);
-                setImageError(true);
-                setImageLoading(false);
-              }}
-            />
-            {imageLoading && (
-              <View style={styles.imageLoadingOverlay}>
-                <ActivityIndicator size="small" color="#00BF63" />
-              </View>
-            )}
-          </>
-        ) : (
-          <View style={styles.fallbackIconContainer}>
-            <Text style={styles.fallbackIcon}>📝</Text>
-            <Text style={styles.fallbackText}>{card.text.charAt(0)}</Text>
-          </View>
-        )}
+    <View style={cardStyles.card}>
+      <View style={cardStyles.iconContainer}>
+        <SvgUri
+          uri={card.imageUrl}
+          width="60%"
+          height="60%"
+          onError={(e) => console.log(`[CARD ${card.id}] Error cargando imagen:`, e)}
+          onLoad={() => console.log(`[CARD ${card.id}] Imagen cargada exitosamente`)}
+        />
       </View>
 
-      <Text style={styles.letter}>{card.text.charAt(0)}</Text>
-      <Text style={styles.code}>{card.text}</Text>
-      <Text style={styles.pronunciation}>{card.pronunciation}</Text>
+      <Text style={cardStyles.letter}>{card.text.charAt(0)}</Text>
+      <Text style={cardStyles.code}>{card.text}</Text>
+      <Text style={cardStyles.pronunciation}>{card.pronunciation}</Text>
 
-      <TouchableOpacity
-        style={[styles.audioButton, isPlaying && styles.audioButtonPlaying]}
-        onPress={() => onPlayAudio(card.audioUrl, card.id)}
-        disabled={isPlaying}
-      >
-        <Text style={styles.audioButtonText}>
-          {isPlaying ? '🔊 Reproduciendo...' : '🎵 Reproducir Sonido'}
-        </Text>
-      </TouchableOpacity>
+      {card.audioUrl && (
+        <TouchableOpacity
+          style={[
+            cardStyles.audioButton,
+            isPlaying && cardStyles.audioButtonPlaying,
+            disabled && cardStyles.audioButtonDisabled
+          ]}
+          onPress={() => onPlayAudio(card.audioUrl, card.id)}
+          disabled={disabled && !isPlaying}
+        >
+          <Text style={cardStyles.audioButtonText}>
+            {isPlaying ? 'Reproduciendo...' : 'Reproducir Pronunciación'}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
-// --- Componente principal ---
-export default function CardScreen() {
-  const [alphabetData, setAlphabetData] = useState<AlphabetCard[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [playingId, setPlayingId] = useState<number | null>(null);
-  const currentSoundRef = useRef<Sound | null>(null);
+// --- Estilos de la Tarjeta ---
+const cardStyles = StyleSheet.create({
+  card: {
+    width: screenWidth * 0.8, // 80% del ancho de pantalla
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 20,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.5)',
+    marginHorizontal: (screenWidth * 0.2) / 4, // Esto centra la card - 20% restante dividido entre los márgenes
+  },
+  iconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#0A4C40',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#00BF63',
+  },
+  letter: {
+    fontSize: 48,
+    fontFamily: 'MontserratAlternates-Bold',
+    color: '#0A4C40',
+    marginBottom: 5,
+    marginTop: 10,
+  },
+  code: {
+    fontSize: 24,
+    fontFamily: 'MontserratAlternates-SemiBold',
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center'
+  },
+  pronunciation: {
+    fontSize: 18,
+    fontFamily: 'MontserratAlternates-Regular',
+    color: '#666',
+    fontStyle: 'italic',
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+  audioButton: {
+    backgroundColor: '#00BF63',
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 25,
+    elevation: 5,
+    minWidth: 200,
+    alignItems: 'center',
+  },
+  audioButtonPlaying: {
+    backgroundColor: '#FFA500',
+  },
+  audioButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+    elevation: 0,
+  },
+  audioButtonText: {
+    color: 'white',
+    fontFamily: 'MontserratAlternates-SemiBold',
+    fontSize: 16,
+    textAlign: 'center'
+  },
+});
 
-  // --- Función mejorada para reproducir audio ---
-  const handlePlayAudio = async (audioUrl: string, cardId: number): Promise<void> => {
-    return new Promise((resolve) => {
-      try {
-        // Si ya está reproduciendo este sonido, detenerlo
-        if (playingId === cardId && currentSoundRef.current) {
-          currentSoundRef.current.stop(() => {
-            currentSoundRef.current?.release();
-            currentSoundRef.current = null;
-            setPlayingId(null);
-            resolve();
-          });
+// --- Componente Principal de la Pantalla ---
+export default function CardScreen() {
+  const [alphabetData, setAlphabetData] = useState<AlphabetCardType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<number | null>(null);
+  const [audioDisabled, setAudioDisabled] = useState(false);
+
+  // Función para manejar la reproducción de audio
+  const handlePlayAudio = useCallback(async (audioUrl: string, cardId: number) => {
+    console.log(`[AUDIO] Botón presionado - Card ID: ${cardId}, URL: ${audioUrl}`);
+
+    if (audioDisabled) {
+      console.log(`[AUDIO] Audio deshabilitado, ignorando click`);
+      return;
+    }
+
+    if (!audioUrl) {
+      Alert.alert('Error', 'No hay URL de audio disponible');
+      return;
+    }
+
+    // Deshabilitar todos los botones y marcar como reproduciendo
+    setAudioDisabled(true);
+    setCurrentlyPlaying(cardId);
+
+    console.log(`[AUDIO] Iniciando reproducción para card ${cardId}`);
+
+    try {
+      const sound = new Sound(audioUrl, '', (error) => {
+        if (error) {
+          console.error(`[AUDIO] Error al cargar sonido para card ${cardId}:`, error);
+          Alert.alert('Error', 'No se pudo cargar el audio');
+          setCurrentlyPlaying(null);
+          setAudioDisabled(false);
           return;
         }
 
-        // Si hay otro sonido reproduciéndose, detenerlo primero
-        if (currentSoundRef.current) {
-          currentSoundRef.current.stop();
-          currentSoundRef.current.release();
-          currentSoundRef.current = null;
-        }
+        console.log(`[AUDIO] Audio cargado correctamente, reproduciendo...`);
 
-        console.log("Cargando sonido desde:", audioUrl);
-        setPlayingId(cardId);
-
-        // Para URLs HTTP
-        const sound = new Sound(audioUrl, null, (error) => {
-          if (error) {
-            console.error('Error al cargar desde URL:', error);
-            Alert.alert('Error', 'No se pudo cargar el sonido');
-            setPlayingId(null);
-            resolve();
-            return;
+        sound.play((success) => {
+          if (success) {
+            console.log(`[AUDIO] Audio reproducido correctamente para card ${cardId}`);
+          } else {
+            console.warn(`[AUDIO] Error al reproducir sonido para card ${cardId}`);
+            Alert.alert('Error', 'No se pudo reproducir el audio');
           }
-          
-          // Reproducir sonido cargado desde URL
-          playSound(sound, cardId, resolve);
+
+          // Limpiar estado después de la reproducción
+          setCurrentlyPlaying(null);
+          setAudioDisabled(false);
+          sound.release();
         });
+      });
+    } catch (error) {
+      console.error(`[AUDIO] Error inesperado:`, error);
+      Alert.alert('Error', 'Ocurrió un error inesperado');
+      setCurrentlyPlaying(null);
+      setAudioDisabled(false);
+    }
+  }, [audioDisabled]);
 
-      } catch (error) {
-        console.error('Error general:', error);
-        setPlayingId(null);
-        resolve();
-      }
-    });
-  };
-
-  // Función auxiliar para reproducir el sonido
-  const playSound = (sound: Sound, cardId: number, resolve: () => void) => {
-    currentSoundRef.current = sound;
-    
-    sound.play((success) => {
-      if (success) {
-        console.log('Sonido reproducido con éxito');
-      } else {
-        console.log('Error al reproducir sonido');
-        Alert.alert('Error', 'No se pudo reproducir el sonido');
-      }
-      
-      // Limpiar después de reproducir
-      sound.release();
-      if (currentSoundRef.current === sound) {
-        currentSoundRef.current = null;
-      }
-      setPlayingId(null);
-      resolve();
-    });
-  };
-
-  // Limpiar al desmontar
-  useEffect(() => {
-    return () => {
-      if (currentSoundRef.current) {
-        currentSoundRef.current.stop();
-        currentSoundRef.current.release();
-        currentSoundRef.current = null;
-      }
-    };
-  }, []);
-
-  const fetchAlphabetData = async () => {
+  // Función para obtener datos
+  const fetchAlphabetData = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('[API] Solicitando datos de la API...');
+
       const response = await httpClient.get<ApiResponse>('/aeronautical-alphabet');
-      console.log('Datos recibidos del backend:', response.data);
-      
+
       if (response.data.success) {
-        // Log para debug de los datos
-        response.data.data.forEach(card => {
-          console.log(`Card: ${card.text}, ImageUrl: ${card.imageUrl}`);
+        const data = response.data.data || [];
+        console.log('[API] Datos recibidos:', data.length, 'elementos');
+
+        // Log detallado de cada elemento
+        data.forEach(item => {
+          console.log(`[API] Item ${item.id}:`, {
+            text: item.text,
+            imageUrl: item.imageUrl,
+            audioUrl: item.audioUrl,
+            pronunciation: item.pronunciation
+          });
         });
-        setAlphabetData(response.data.data || []);
+
+        setAlphabetData(data);
       } else {
-        console.warn('API respondió con success=false');
+        console.warn('[API] API respondió con success=false');
         setAlphabetData([]);
       }
     } catch (error: any) {
-      console.error('Error al obtener datos del alfabeto:', error.response?.data || error.message);
+      console.error('[API] Error al obtener datos:', error);
+      console.error('[API] Detalles del error:', error.response?.data || error.message);
+      Alert.alert('Error', 'No se pudieron cargar los datos del alfabeto');
       setAlphabetData([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAlphabetData();
-  }, []);
+  }, [fetchAlphabetData]);
 
   return (
     <LinearGradient
@@ -241,24 +286,28 @@ export default function CardScreen() {
             contentContainerStyle={styles.scrollContent}
             horizontal
             showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            snapToInterval={screenWidth} // Esto es clave - usa el ancho completo de pantalla
+            snapToAlignment="center"
+            decelerationRate="fast"
           >
-            {alphabetData.map((card) => {
-              const isPlaying = playingId === card.id;
-              
-              return (
-                <AlphabetCardComponent
-                  key={card.id}
-                  card={card}
-                  onPlayAudio={handlePlayAudio}
-                  isPlaying={isPlaying}
-                />
-              );
-            })}
+            {alphabetData.map((card) => (
+              <AlphabetCardIntegrated
+                key={card.id}
+                card={card}
+                onPlayAudio={handlePlayAudio}
+                isPlaying={currentlyPlaying === card.id}
+                disabled={audioDisabled && currentlyPlaying !== card.id}
+              />
+            ))}
           </ScrollView>
         ) : (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>No se pudieron cargar los datos</Text>
-            <TouchableOpacity onPress={fetchAlphabetData} style={styles.retryButton}>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={fetchAlphabetData}
+            >
               <Text style={styles.retryButtonText}>Reintentar</Text>
             </TouchableOpacity>
           </View>
@@ -268,137 +317,48 @@ export default function CardScreen() {
   );
 }
 
-// --- Estilos ACTUALIZADOS ---
+// --- Estilos de la Pantalla ---
 const styles = StyleSheet.create({
   fullScreen: { flex: 1 },
   safeArea: { zIndex: 10, flex: 1 },
   backgroundImage: { ...StyleSheet.absoluteFillObject, opacity: 0.9 },
   scrollContent: {
-    paddingHorizontal: 20,
+    alignItems: 'center',
     paddingBottom: 150,
-    flexGrow: 1,
-    alignItems: 'center',
+    // Padding horizontal calculado para centrado perfecto
+    paddingHorizontal: (screenWidth - (screenWidth * 0.8)) / 2,
   },
-  card: {
-    width: screenWidth * 0.8,
-    backgroundColor: 'white',
-    borderRadius: 30,
-    padding: 15,
-    marginHorizontal: 10,
-    alignItems: 'center',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
-  },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'black',
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#00BF63',
-    marginBottom: 15,
-    overflow: 'hidden', // Para que la imagen no se salga del contenedor
+    alignItems: 'center'
   },
-  icon: { 
-    width: '100%', 
-    height: '100%',
-  },
-  imageLoadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fallbackIconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fallbackIcon: { 
-    fontSize: 40,
-    marginBottom: 5,
+  loadingText: {
     color: 'white',
+    fontSize: 18,
+    fontFamily: 'MontserratAlternates-Regular',
+    marginTop: 10
   },
-  fallbackText: {
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
     color: 'white',
-    fontSize: 12,
-    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: 'MontserratAlternates-Regular',
+    marginBottom: 20,
   },
-  letter: { 
-    fontSize: 48, 
-    fontFamily: 'MontserratAlternates-Bold', 
-    color: '#0A4C40', 
-    marginBottom: 5 
+  retryButton: {
+    backgroundColor: '#00BF63',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
   },
-  code: { 
-    fontSize: 24, 
-    fontFamily: 'MontserratAlternates-SemiBold', 
-    color: '#333', 
-    marginBottom: 10, 
-    textAlign: 'center' 
-  },
-  pronunciation: { 
-    fontSize: 18, 
-    fontFamily: 'MontserratAlternates-Regular', 
-    color: '#666', 
-    fontStyle: 'italic', 
-    marginBottom: 20, 
-    textAlign: 'center' 
-  },
-  audioButton: { 
-    backgroundColor: '#00BF63', 
-    paddingHorizontal: 25, 
-    paddingVertical: 12, 
-    borderRadius: 25, 
-    elevation: 5 
-  },
-  audioButtonPlaying: {
-    backgroundColor: '#0A4C40',
-    opacity: 0.8,
-  },
-  audioButtonText: { 
-    color: 'white', 
-    fontFamily: 'MontserratAlternates-SemiBold', 
-    fontSize: 16 
-  },
-  loadingContainer: { 
-    height: 300, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
-  },
-  loadingText: { 
-    color: 'white', 
-    fontSize: 18, 
-    fontFamily: 'MontserratAlternates-Regular', 
-    marginTop: 10 
-  },
-  errorContainer: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
-  },
-  errorText: { 
-    color: 'white', 
-    fontSize: 18, 
-    marginBottom: 20 
-  },
-  retryButton: { 
-    backgroundColor: 'white', 
-    paddingHorizontal: 20, 
-    paddingVertical: 10, 
-    borderRadius: 10 
-  },
-  retryButtonText: { 
-    color: '#00BF63', 
-    fontWeight: 'bold' 
+  retryButtonText: {
+    color: 'white',
+    fontFamily: 'MontserratAlternates-SemiBold',
+    fontSize: 16,
   },
 });
