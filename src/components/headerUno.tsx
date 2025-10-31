@@ -1,6 +1,6 @@
 // HeaderDos.js
 import React from 'react';
-import { View, Image, StyleSheet} from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; // Importa SafeAreaView
 
 function HeaderUno() {
@@ -19,17 +19,18 @@ function HeaderUno() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: 'transparent',
     zIndex: 10,
+    backgroundColor: 'transparent',
   },
   container: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: "flex-end", 
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 20, 
+    justifyContent: "flex-end",
+    paddingTop: '5%',
+    alignItems: 'flex-start',
+    paddingHorizontal: '10%',
     backgroundColor: 'transparent',
-  },  
+  },
   planeIcon: {
     width: 60,
     height: 30,

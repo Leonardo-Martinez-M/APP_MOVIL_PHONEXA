@@ -8,6 +8,7 @@ import {
   Easing,
   Image,
   BackHandler,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -74,102 +75,104 @@ export default function StreakScreen({ route, navigation }: any) {
   const animationSize = showFireAnimation ? 200 : 150;
 
   return (
-    <LinearGradient
-      colors={GRADIENT_COLORS}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
-      <SafeAreaView>
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      <LinearGradient
+        colors={GRADIENT_COLORS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
+      >
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
         <HeaderUno />
-      </SafeAreaView>
 
-      <SafeAreaView style={styles.safeArea}>
-        <Animated.View
-          style={[
-            styles.container,
-            { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }
-          ]}
-        >
-          {/* Título */}
-          <Text style={styles.title}>Racha de preguntas</Text>
-          <Text style={styles.subtitle}>contestadas correctamente</Text>
+        <SafeAreaView style={styles.safeArea}>
+          <Animated.View
+            style={[
+              styles.container,
+              { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }
+            ]}
+          >
+            {/* Título */}
+            <Text style={styles.title}>Racha de preguntas</Text>
+            <Text style={styles.subtitle}>contestadas correctamente</Text>
 
-          {/* Animación */}
-          <View style={styles.animationContainer}>
-            <LottieView
-              source={animationSource}
-              autoPlay
-              loop
-              style={[styles.animation, { width: animationSize, height: animationSize }]}
-            />
+            {/* Animación */}
+            <View style={styles.animationContainer}>
+              <LottieView
+                source={animationSource}
+                autoPlay
+                loop
+                style={[styles.animation, { width: animationSize, height: animationSize }]}
+              />
 
-            {/* Número de Racha */}
-            <View style={styles.streakNumberContainer}>
-              <Text style={[
-                styles.streakNumber,
-                !showFireAnimation && styles.streakNumberSad
-              ]}>
-                {streak}
-              </Text>
+              {/* Número de Racha */}
+              <View style={styles.streakNumberContainer}>
+                <Text style={[
+                  styles.streakNumber,
+                  !showFireAnimation && styles.streakNumberSad
+                ]}>
+                  {streak}
+                </Text>
+              </View>
             </View>
-          </View>
 
-          {/* Mensaje según la racha */}
-          <Text style={styles.message}>
-            {streak === 0
-              ? '¡Sigue practicando!'
-              : streak < 5
-                ? '¡Buen trabajo!'
-                : streak < 10
-                  ? '¡Impresionante!'
-                  : '¡Eres un experto!'}
-          </Text>
+            {/* Mensaje según la racha */}
+            <Text style={styles.message}>
+              {streak === 0
+                ? '¡Sigue practicando!'
+                : streak < 5
+                  ? '¡Buen trabajo!'
+                  : streak < 10
+                    ? '¡Impresionante!'
+                    : '¡Eres un experto!'}
+            </Text>
 
-          {/* Información de racha guardada */}
-          {savedStreak > 0 && streak === 0 && (
-            <View style={styles.savedInfo}>
-              <Text style={styles.savedText}>
-                Tienes una racha guardada de {savedStreak}
-              </Text>
-            </View>
-          )}
-
-          {/* Botones */}
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.playAgainButton]}
-              onPress={handlePlayAgain}
-            >
-              <Text style={styles.buttonText}>
-                {savedStreak > 0 ? 'Continuar Racha' : 'Jugar Nuevamente'}
-              </Text>
-            </TouchableOpacity>
-
-            {savedStreak > 0 && (
-              <TouchableOpacity
-                style={[styles.button, styles.newGameButton]}
-                onPress={handleNewGame}
-              >
-                <Text style={styles.buttonText}>Nuevo Juego</Text>
-              </TouchableOpacity>
+            {/* Información de racha guardada */}
+            {savedStreak > 0 && streak === 0 && (
+              <View style={styles.savedInfo}>
+                <Text style={styles.savedText}>
+                  Tienes una racha guardada de {savedStreak}
+                </Text>
+              </View>
             )}
 
-            {/* <TouchableOpacity
+            {/* Botones */}
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.playAgainButton]}
+                onPress={handlePlayAgain}
+              >
+                <Text style={styles.buttonText}>
+                  {savedStreak > 0 ? 'Continuar Racha' : 'Jugar Nuevamente'}
+                </Text>
+              </TouchableOpacity>
+
+              {savedStreak > 0 && (
+                <TouchableOpacity
+                  style={[styles.button, styles.newGameButton]}
+                  onPress={handleNewGame}
+                >
+                  <Text style={styles.buttonText}>Nuevo Juego</Text>
+                </TouchableOpacity>
+              )}
+
+              {/* <TouchableOpacity
               style={[styles.button, styles.homeButton]}
               onPress={handleGoHome}
             >
               <Text style={styles.buttonText}>Ir al Inicio</Text>
             </TouchableOpacity> */}
-          </View>
-        </Animated.View>
-      </SafeAreaView>
-    </LinearGradient>
+            </View>
+          </Animated.View>
+        </SafeAreaView>
+      </LinearGradient>
+    </>
   );
 }
 

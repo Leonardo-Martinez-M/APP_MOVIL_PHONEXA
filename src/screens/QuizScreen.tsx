@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
   BackHandler,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -68,7 +69,7 @@ export default function QuizScreen({ navigation, route }: any) {
     // Limpiar todos los timers
     if (continueTimerRef.current) clearTimeout(continueTimerRef.current);
     if (questionTimerRef.current) clearTimeout(questionTimerRef.current);
-    
+
     console.log('[QUIZ] Guardando y saliendo - Racha:', streak);
     navigation.navigate('Racha', {
       streak,
@@ -78,10 +79,10 @@ export default function QuizScreen({ navigation, route }: any) {
 
   const handleTimeUp = useCallback(() => {
     if (answered || showContinueScreen) return;
-    
+
     console.log('[QUIZ] Tiempo agotado');
     setAnswered(true);
-    
+
     // Pequeño delay para mostrar feedback
     setTimeout(() => {
       handleSaveAndExit();
@@ -130,7 +131,7 @@ export default function QuizScreen({ navigation, route }: any) {
       console.log(`[API] Realizando solicitud a la API (#${apiRequestCount})...`);
 
       const response = await httpClient.get<QuizResponse>('/aeronautical-alphabet/quiz/random');
-      
+
       if (!response.data.success) {
         throw new Error('API respondió con success=false');
       }
@@ -181,14 +182,14 @@ export default function QuizScreen({ navigation, route }: any) {
       if (showContinueScreen) {
         return false; // Permitir retroceso en pantalla de continuación
       }
-      
+
       Alert.alert('Quiz en Progreso', '¿Estás seguro de que quieres salir? Se perderá tu progreso actual.', [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Salir', onPress: () => handleSaveAndExit() }
       ]);
       return true;
     });
-    
+
     return () => backHandler.remove();
   }, [showContinueScreen, handleSaveAndExit]);
 
@@ -208,14 +209,14 @@ export default function QuizScreen({ navigation, route }: any) {
   // Temporizador de pregunta
   useEffect(() => {
     if (!currentQuestion || answered || showContinueScreen) return;
-    
+
     if (timeLeft === 0) {
       handleTimeUp();
       return;
     }
 
     questionTimerRef.current = setTimeout(() => setTimeLeft(t => t - 1), 1000) as unknown as number;
-    
+
     return () => {
       if (questionTimerRef.current) clearTimeout(questionTimerRef.current);
     };
@@ -224,14 +225,14 @@ export default function QuizScreen({ navigation, route }: any) {
   // Temporizador de pantalla de continuación
   useEffect(() => {
     if (!showContinueScreen) return;
-    
+
     if (continueTimeLeft === 0) {
       handleSaveAndExit();
       return;
     }
-    
+
     continueTimerRef.current = setTimeout(() => setContinueTimeLeft(t => t - 1), 1000) as unknown as number;
-    
+
     return () => {
       if (continueTimerRef.current) clearTimeout(continueTimerRef.current);
     };
@@ -247,7 +248,7 @@ export default function QuizScreen({ navigation, route }: any) {
     if (option === currentQuestion.correctAnswer) {
       const newStreak = streak + 1;
       setStreak(newStreak);
-      
+
       setTimeout(() => {
         setShowContinueScreen(true);
         setContinueTimeLeft(15);
@@ -264,7 +265,7 @@ export default function QuizScreen({ navigation, route }: any) {
     if (continueTimerRef.current) {
       clearTimeout(continueTimerRef.current);
     }
-    
+
     setShowContinueScreen(false);
     setContinueTimeLeft(15);
     fetchRandomQuestion();
@@ -288,108 +289,116 @@ export default function QuizScreen({ navigation, route }: any) {
   // --- Pantalla de continuación ---
   if (showContinueScreen) {
     return (
-      <LinearGradient colors={GRADIENT_COLORS} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fullScreen}>
-        <Image source={BackgroundAbstract} resizeMode="cover" style={styles.backgroundImage} />
-        <SafeAreaView style={styles.safeArea}>
-          <HeaderDos />
-          <View style={styles.continueContainer}>
-            <Text style={styles.continueTitle}>¡Correcto! 🎉</Text>
-            <Text style={styles.continueStreak}>Racha actual: {streak}</Text>
-            <View style={styles.timerCircle}>
-              <Text style={styles.timerCircleText}>{continueTimeLeft}s</Text>
+      <>
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+        <LinearGradient colors={GRADIENT_COLORS} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fullScreen}>
+          <Image source={BackgroundAbstract} resizeMode="cover" style={styles.backgroundImage} />
+            <HeaderDos />
+          <SafeAreaView style={styles.safeArea}>
+            <View style={styles.continueContainer}>
+              <Text style={styles.continueTitle}>¡Correcto! 🎉</Text>
+              <Text style={styles.continueStreak}>Racha actual: {streak}</Text>
+              <View style={styles.timerCircle}>
+                <Text style={styles.timerCircleText}>{continueTimeLeft}s</Text>
+              </View>
+              <Text style={styles.continueMessage}>¿Quieres continuar con la siguiente pregunta?</Text>
+              <View style={styles.continueButtons}>
+                <TouchableOpacity
+                  style={[styles.continueButton, styles.continueButtonYes]}
+                  onPress={handleContinuePlaying}
+                >
+                  <Text style={styles.continueButtonText}>Sí, Continuar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.continueButton, styles.continueButtonNo]}
+                  onPress={handleSaveAndExit}
+                >
+                  <Text style={styles.continueButtonText}>Guardar y Salir</Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.continueNote}>
+                Se guardará automáticamente en {continueTimeLeft} segundos
+              </Text>
             </View>
-            <Text style={styles.continueMessage}>¿Quieres continuar con la siguiente pregunta?</Text>
-            <View style={styles.continueButtons}>
-              <TouchableOpacity
-                style={[styles.continueButton, styles.continueButtonYes]}
-                onPress={handleContinuePlaying}
-              >
-                <Text style={styles.continueButtonText}>Sí, Continuar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.continueButton, styles.continueButtonNo]}
-                onPress={handleSaveAndExit}
-              >
-                <Text style={styles.continueButtonText}>Guardar y Salir</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.continueNote}>
-              Se guardará automáticamente en {continueTimeLeft} segundos
-            </Text>
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
+          </SafeAreaView>
+        </LinearGradient>
+      </>
     );
   }
 
   // --- Pantalla principal ---
   return (
-    <LinearGradient colors={GRADIENT_COLORS} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fullScreen}>
-      <Image source={BackgroundAbstract} resizeMode="cover" style={styles.backgroundImage} />
-      <SafeAreaView style={styles.safeArea}>
-        <HeaderDos />
-        {currentQuestion && (
-          <View style={styles.timerContainer}>
-            <Text style={styles.timerText}>{timeLeft}s</Text>
-            <View style={[styles.timerBar, { width: `${(timeLeft / 30) * 100}%` }]} />
-          </View>
-        )}
-        <View style={styles.streakContainer}>
-          <Text style={styles.streakText}>Racha: {streak}</Text>
-        </View>
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Cargando pregunta...</Text>
-          </View>
-        ) : currentQuestion ? (
-          <View style={styles.quizContainer}>
-            <View style={styles.questionCard}>
-              <View style={styles.imageContainer}>
-                <SvgUri
-                  uri={currentQuestion.imageUrl}
-                  width="80%"
-                  height="80%"
-                  onError={e => console.log('Error cargando imagen:', e)}
-                />
-              </View>
-              <Text style={styles.questionText}>{currentQuestion.question}</Text>
-              <View style={styles.optionsContainer}>
-                {currentQuestion.options.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={getOptionStyle(option)}
-                    onPress={() => handleOptionSelect(option)}
-                    disabled={answered}
-                  >
-                    <Text style={getOptionTextStyle(option)}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              {answered && (
-                <View style={styles.feedbackContainer}>
-                  {selectedOption === currentQuestion.correctAnswer ? (
-                    <Text style={styles.feedbackCorrect}>¡Correcto! 🎉</Text>
-                  ) : (
-                    <Text style={styles.feedbackWrong}>
-                      Correcto: {currentQuestion.correctAnswer}
-                    </Text>
-                  )}
-                </View>
-              )}
+      <LinearGradient colors={GRADIENT_COLORS} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fullScreen}>
+        <Image source={BackgroundAbstract} resizeMode="cover" style={styles.backgroundImage} />
+          <HeaderDos />
+        <SafeAreaView style={styles.safeArea}>
+          {currentQuestion && (
+            <View style={styles.timerContainer}>
+              <Text style={styles.timerText}>{timeLeft}s</Text>
+              <View style={[styles.timerBar, { width: `${(timeLeft / 30) * 100}%` }]} />
             </View>
+          )}
+          <View style={styles.streakContainer}>
+            <Text style={styles.streakText}>Racha: {streak}</Text>
           </View>
-        ) : (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>No se pudo cargar la pregunta</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={fetchRandomQuestion}>
-              <Text style={styles.retryButtonText}>Reintentar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </SafeAreaView>
-    </LinearGradient>
+
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#fff" />
+              <Text style={styles.loadingText}>Cargando pregunta...</Text>
+            </View>
+          ) : currentQuestion ? (
+            <View style={styles.quizContainer}>
+              <View style={styles.questionCard}>
+                <View style={styles.imageContainer}>
+                  <SvgUri
+                    uri={currentQuestion.imageUrl}
+                    width="80%"
+                    height="80%"
+                    onError={e => console.log('Error cargando imagen:', e)}
+                  />
+                </View>
+                <Text style={styles.questionText}>{currentQuestion.question}</Text>
+                <View style={styles.optionsContainer}>
+                  {currentQuestion.options.map((option, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={getOptionStyle(option)}
+                      onPress={() => handleOptionSelect(option)}
+                      disabled={answered}
+                    >
+                      <Text style={getOptionTextStyle(option)}>{option}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                {answered && (
+                  <View style={styles.feedbackContainer}>
+                    {selectedOption === currentQuestion.correctAnswer ? (
+                      <Text style={styles.feedbackCorrect}>¡Correcto! 🎉</Text>
+                    ) : (
+                      <Text style={styles.feedbackWrong}>
+                        Correcto: {currentQuestion.correctAnswer}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>No se pudo cargar la pregunta</Text>
+              <TouchableOpacity style={styles.retryButton} onPress={fetchRandomQuestion}>
+                <Text style={styles.retryButtonText}>Reintentar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </SafeAreaView>
+      </LinearGradient>
+    </>
   );
 }
 

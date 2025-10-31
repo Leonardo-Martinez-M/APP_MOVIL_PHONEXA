@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../navigation/AppNavigator';
@@ -40,47 +39,50 @@ export default function LogoutScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={GRADIENT_COLORS}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-      <SafeAreaView>
+      <LinearGradient
+        colors={GRADIENT_COLORS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
+      >
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
+
         <HeaderUno />
-      </SafeAreaView>
 
-      <View style={styles.content}>
-        <View style={styles.welcomeSection}>
-          <Text style={styles.LogOutText}>¿Deseas cerrar sesión?</Text>
-          <Text style={styles.subText}>
-            Si sales, necesitarás iniciar sesión nuevamente para acceder a tu cuenta.
-          </Text>
+
+        <View style={styles.content}>
+          <View style={styles.welcomeSection}>
+            <Text style={styles.LogOutText}>¿Deseas cerrar sesión?</Text>
+            <Text style={styles.subText}>
+              Si sales, necesitarás iniciar sesión nuevamente para acceder a tu cuenta.
+            </Text>
+          </View>
+
+          <View style={styles.buttonSection}>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, styles.logoutButton]}
+              onPress={confirmLogout}
+            >
+              <Text style={styles.buttonText}>Salir</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        <View style={styles.buttonSection}>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.logoutButton]}
-            onPress={confirmLogout}
-          >
-            <Text style={styles.buttonText}>Salir</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </>
   );
 }
 
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom:100
+    marginBottom: 100
   },
   cancelButton: {
     backgroundColor: '#0A4C40',

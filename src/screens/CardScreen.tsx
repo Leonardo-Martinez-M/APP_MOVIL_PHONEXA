@@ -9,6 +9,7 @@ import {
   Alert,
   TouchableOpacity,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -88,7 +89,7 @@ const AlphabetCardIntegrated = ({
 
 const cardStyles = StyleSheet.create({
   card: {
-    marginTop:'1.3%',
+    marginTop: '1.3%',
     width: screenWidth * 0.8,
     height: '100%',
     backgroundColor: 'white',
@@ -142,7 +143,7 @@ const cardStyles = StyleSheet.create({
     borderRadius: 25,
     elevation: 5,
     minWidth: 200,
-    marginLeft:30,
+    marginLeft: 30,
     marginRight: 30,
     alignItems: 'center',
     backgroundColor: '#0A4C40',
@@ -273,59 +274,62 @@ export default function CardScreen() {
   }, [fetchAlphabetData]);
 
   return (
-    <LinearGradient
-      colors={GRADIENT_COLORS}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-      <SafeAreaView style={styles.safeArea}>
+      <LinearGradient
+        colors={GRADIENT_COLORS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
+      >
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
         <HeaderDos />
 
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Cargando alfabeto...</Text>
-          </View>
-        ) : alphabetData.length > 0 ? (
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            snapToInterval={screenWidth}
-            snapToAlignment="center"
-            decelerationRate="fast"
-          >
-            {alphabetData.map((card) => (
-              <AlphabetCardIntegrated
-                key={card.id}
-                card={card}
-                onPlayAudio={handlePlayAudio}
-                isPlaying={currentlyPlaying === card.id}
-                disabled={audioDisabled && currentlyPlaying !== card.id}
-              />
-            ))}
-          </ScrollView>
-        ) : (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>No se pudieron cargar los datos</Text>
-            <TouchableOpacity
-              style={styles.retryButton}
-              onPress={handleRetry}
+        <SafeAreaView style={styles.safeArea}>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#fff" />
+              <Text style={styles.loadingText}>Cargando alfabeto...</Text>
+            </View>
+          ) : alphabetData.length > 0 ? (
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              snapToInterval={screenWidth}
+              snapToAlignment="center"
+              decelerationRate="fast"
             >
-              <Text style={styles.retryButtonText}>Reintentar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </SafeAreaView>
-    </LinearGradient>
+              {alphabetData.map((card) => (
+                <AlphabetCardIntegrated
+                  key={card.id}
+                  card={card}
+                  onPlayAudio={handlePlayAudio}
+                  isPlaying={currentlyPlaying === card.id}
+                  disabled={audioDisabled && currentlyPlaying !== card.id}
+                />
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>No se pudieron cargar los datos</Text>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={handleRetry}
+              >
+                <Text style={styles.retryButtonText}>Reintentar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </SafeAreaView>
+      </LinearGradient>
+    </>
   );
 }
 

@@ -12,10 +12,10 @@ function HeaderDos() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} >
           <Icon 
             name="chevron-left" 
-            size={32}           
+            size={35}           
             color="white"       
           />
         </TouchableOpacity>
@@ -38,15 +38,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between', 
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 20, 
+    alignItems: 'flex-start',
+    paddingHorizontal: '10%',
+    paddingTop: '5%',
     backgroundColor: 'transparent',
-  },
-  backButton: {
-    padding: 5, 
-  },
-  
+  },  
   planeIcon: {
     width: 60,
     height: 30,

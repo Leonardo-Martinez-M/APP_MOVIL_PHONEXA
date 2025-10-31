@@ -11,6 +11,7 @@ import {
   Image,
   Animated,
   ToastAndroid,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../navigation/AppNavigator';
@@ -200,116 +201,120 @@ export default function LoginScreen({ navigation }: any) {
   }, [FormAnimate]);
 
   return (
-    <LinearGradient
-      colors={GRADIENT_COLORS}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
-      <KeyboardAvoidingView
-        style={styles.overlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      <LinearGradient
+        colors={GRADIENT_COLORS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
       >
-        <Animated.View
-          style={[
-            styles.formContainer,
-            { transform: [{ translateY: FormAnimate }] },
-          ]}
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
+        <KeyboardAvoidingView
+          style={styles.overlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Animated.Image
-            source={LogoImage} // Usando el logo principal (avion.png)
+          <Animated.View
             style={[
-              styles.Image,
-              { opacity: fadeAnim, transform: [{ scale: bounceAnim }] },
+              styles.formContainer,
+              { transform: [{ translateY: FormAnimate }] },
             ]}
-          />
-          <Text style={styles.title}>Iniciar Sesión</Text>
-          <Text style={styles.subtitle}>
-            Ingresa tus credenciales para continuar
-          </Text>
-
-          {/* Campo Email - Estructura Modificada */}
-          <View style={styles.inputContainer}>
-            {errors.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            ) : (
-              <Text style={styles.label}>Email</Text>
-            )}
-            <TextInput
-              style={[styles.input, errors.email && styles.inputError]}
-              value={formData.email}
-              onChangeText={value => updateField('email', value)}
-              placeholder="Ejemplo@email.com"
-              placeholderTextColor="rgba(255, 255, 255, 0.5)" // Para que se vea en el fondo oscuro
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-
-          {/* Campo Password - Estructura Modificada */}
-          <View style={styles.inputContainer}>
-            {errors.password ? (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            ) : (
-              <Text style={styles.label}>Contraseña</Text>
-            )}
-            <View
+          >
+            <Animated.Image
+              source={LogoImage} // Usando el logo principal (avion.png)
               style={[
-                styles.passwordContainer,
-                errors.password && styles.passwordContainerError,
+                styles.Image,
+                { opacity: fadeAnim, transform: [{ scale: bounceAnim }] },
               ]}
-            >
+            />
+            <Text style={styles.title}>Iniciar Sesión</Text>
+            <Text style={styles.subtitle}>
+              Ingresa tus credenciales para continuar
+            </Text>
+
+            {/* Campo Email - Estructura Modificada */}
+            <View style={styles.inputContainer}>
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : (
+                <Text style={styles.label}>Email</Text>
+              )}
               <TextInput
-                style={styles.passwordInput}
-                value={formData.password}
-                onChangeText={value => updateField('password', value)}
-                placeholder="Ingresa tu contraseña"
+                style={[styles.input, errors.email && styles.inputError]}
+                value={formData.email}
+                onChangeText={value => updateField('email', value)}
+                placeholder="Ejemplo@email.com"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)" // Para que se vea en el fondo oscuro
-                secureTextEntry={!showPassword}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
-              <TouchableOpacity
-                style={styles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Icon
-                  name={showPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="rgba(255, 255, 255, 0.8)" // Color de icono blanco semi-transparente
-                />
-              </TouchableOpacity>
             </View>
-          </View>
 
-          {/* Botón de login */}
-          <TouchableOpacity
-            style={[styles.loginButton, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={styles.loginButtonText}>
-              {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-            </Text>
-          </TouchableOpacity>
+            {/* Campo Password - Estructura Modificada */}
+            <View style={styles.inputContainer}>
+              {errors.password ? (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              ) : (
+                <Text style={styles.label}>Contraseña</Text>
+              )}
+              <View
+                style={[
+                  styles.passwordContainer,
+                  errors.password && styles.passwordContainerError,
+                ]}
+              >
+                <TextInput
+                  style={styles.passwordInput}
+                  value={formData.password}
+                  onChangeText={value => updateField('password', value)}
+                  placeholder="Ingresa tu contraseña"
+                  placeholderTextColor="rgba(255, 255, 255, 0.5)" // Para que se vea en el fondo oscuro
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Icon
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={24}
+                    color="rgba(255, 255, 255, 0.8)" // Color de icono blanco semi-transparente
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          {/* Link a registro */}
-          <TouchableOpacity
-            style={styles.registerLink}
-            onPress={() => navigation.navigate('Register')}
-          >
-            <Text style={styles.registerLinkText}>
-              ¿Aún no tienes cuenta?{' '}
-              <Text style={styles.registerLinkTextBold}>Regístrate</Text>
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+            {/* Botón de login */}
+            <TouchableOpacity
+              style={[styles.loginButton, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              <Text style={styles.loginButtonText}>
+                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Link a registro */}
+            <TouchableOpacity
+              style={styles.registerLink}
+              onPress={() => navigation.navigate('Register')}
+            >
+              <Text style={styles.registerLinkText}>
+                ¿Aún no tienes cuenta?{' '}
+                <Text style={styles.registerLinkTextBold}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </LinearGradient>
+    </>
   );
 }
 

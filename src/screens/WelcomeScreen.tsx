@@ -1,77 +1,151 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions, StatusBar } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 const BackgroundAbstract = require('../assets/images/bg-image.png');
 import { COLORS } from '../constants/colors';
 
 export default function WelcomeScreen({ navigation }: any) {
+  const { width, height } = useWindowDimensions();
   const gradientColors = ['#00BF63', '#0A4C40'];
 
+  // Escalado basado en el ancho del dispositivo
+  const scale = (size: number) => {
+    const baseWidth = 375; // iPhone 8
+    return (width / baseWidth) * size;
+  };
+
   return (
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
+      >
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
 
-    <LinearGradient
-      colors={gradientColors}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
+        {/* Título PHONEXA */}
+        <Text style={[
+          styles.welcomeText,
+          {
+            top: scale(50),
+            right: scale(20),
+            fontSize: scale(28)
+          }
+        ]}>
+          PHONEXA
+        </Text>
 
-      <Text style={styles.welcomeText}>PHONEXA</Text>
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <Image
-            source={require('./../assets/images/avion.png')}
-            style={styles.logo}
-            resizeMode='contain'
-          />
-          <View style={styles.header}>
-            <Text style={styles.subtitle}>Domina el Alfabeto Aeronáutico en tiempo récord</Text>
-          </View>
+        {/* Contenido principal */}
+        <View style={styles.overlay}>
+          <View style={[
+            styles.container,
+            {
+              width: width * 0.85,
+              padding: scale(30),
+              marginTop: height * 0.1 // Ajusta esta posición según necesites
+            }
+          ]}>
+            <Image
+              source={require('./../assets/images/avion.png')}
+              style={[
+                styles.logo,
+                {
+                  width: scale(200),
+                  height: scale(200)
+                }
+              ]}
+              resizeMode='contain'
+            />
 
-          <View style={styles.buttonContainer}>
-            {/* 1. BOTÓN INICIAR SESIÓN */}
-            <TouchableOpacity
-              style={styles.secondaryButtonContainer} // Nuevo contenedor con borde/sombra
-              onPress={() => navigation.navigate('Login')}
-            >
-              <LinearGradient
-                // Degradado sutil (diferente al principal)
-                colors={[COLORS.darkGreen, '#00BF63']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.buttonGradient} // Relleno interno
+            <View style={[styles.header, { marginBottom: scale(50) }]}>
+              <Text style={[
+                styles.subtitle,
+                { fontSize: scale(16) }
+              ]}>
+                Domina el Alfabeto Aeronáutico en tiempo récord
+              </Text>
+            </View>
+
+            <View style={[
+              styles.buttonContainer,
+              { width: '100%' }
+            ]}>
+              {/* BOTÓN INICIAR SESIÓN */}
+              <TouchableOpacity
+                style={[
+                  styles.secondaryButtonContainer,
+                  {
+                    marginBottom: scale(25),
+                    borderRadius: scale(22)
+                  }
+                ]}
+                onPress={() => navigation.navigate('Login')}
               >
-                <Text style={styles.buttonText}>Iniciar Sesión</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={[COLORS.darkGreen, '#00BF63']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[
+                    styles.buttonGradient,
+                    {
+                      paddingVertical: scale(15),
+                      borderRadius: scale(20)
+                    }
+                  ]}
+                >
+                  <Text style={[
+                    styles.buttonText,
+                    { fontSize: scale(16) }
+                  ]}>
+                    Iniciar Sesión
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
 
-            {/* 2. BOTÓN REGISTRARSE */}
-            <TouchableOpacity
-              style={styles.primaryButtonContainer} // Nuevo contenedor con borde/sombra
-              onPress={() => navigation.navigate('Register')}
-            >
-              <LinearGradient
-                // Degradado principal del diseño
-                colors={['#00BF63', '#0A4C40']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.buttonGradient} // Relleno interno
+              {/* BOTÓN REGISTRARSE */}
+              <TouchableOpacity
+                style={[
+                  styles.primaryButtonContainer,
+                  {
+                    marginBottom: scale(25),
+                    borderRadius: scale(22)
+                  }
+                ]}
+                onPress={() => navigation.navigate('Register')}
               >
-                <Text style={styles.buttonText}>Registrarse</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={['#00BF63', '#0A4C40']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[
+                    styles.buttonGradient,
+                    {
+                      paddingVertical: scale(15),
+                      borderRadius: scale(20)
+                    }
+                  ]}
+                >
+                  <Text style={[
+                    styles.buttonText,
+                    { fontSize: scale(16) }
+                  ]}>
+                    Registrarse
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
-
         </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   fullScreen: {
@@ -80,88 +154,50 @@ const styles = StyleSheet.create({
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     opacity: 0.9,
-    width: '100%',
-    height: '100%',
   },
   overlay: {
     flex: 1,
-    zIndex: 10,
-    marginTop: '30%',
-    justifyContent: 'center',
+    justifyContent: 'center', // Centra verticalmente
     alignItems: 'center',
   },
-  logoContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  container: {
     alignItems: 'center',
+    justifyContent: 'center',
   },
   logo: {
-    width: 200,
-    height: 200,
+    // Dimensiones definidas dinámicamente
   },
   welcomeText: {
     position: 'absolute',
-    top: 50,
-    right: 20,
     color: 'white',
-    fontSize: 28,
     fontFamily: 'MontserratAlternates-Bold',
     textShadowColor: 'rgba(255, 255, 255, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
-  },
-  container: {
-    width: '85%',
-    height: '90%',
-    padding: 30,
-    alignItems: 'center',
+    zIndex: 20,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 50,
   },
   subtitle: {
-    fontSize: 16,
     fontFamily: 'MontserratAlternates-Medium',
     color: '#FFFFFF',
     textAlign: 'center',
+    lineHeight: 22, // Mejor legibilidad
   },
   buttonContainer: {
-    width: '90%',
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
     fontWeight: '700',
   },
-  // Este estilo reemplaza el 'paddingVertical' y 'borderRadius' del estilo 'button' original.
   buttonGradient: {
-    paddingVertical: 15,
-    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
-
-  // 2. CONTENEDOR PRIMARIO (REGISTRARME)
-  // Se aplica al TouchableOpacity. Define Borde y Sombra.
   primaryButtonContainer: {
-    borderRadius: 22, // El mismo radio que tenías
-    marginBottom: 25, // El mismo margen que tenías
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 1)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.16,
-    shadowRadius: 8,
-    elevation: 5, // Android
-    overflow: 'hidden',
-    color: 'white'
-  },
-
-  secondaryButtonContainer: {
-    borderRadius: 22,
-    marginBottom: 25,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 1)',
     shadowColor: '#000000',
@@ -170,5 +206,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
     overflow: 'hidden',
+    width: '100%',
+  },
+  secondaryButtonContainer: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 1)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 5,
+    overflow: 'hidden',
+    width: '100%',
   },
 });

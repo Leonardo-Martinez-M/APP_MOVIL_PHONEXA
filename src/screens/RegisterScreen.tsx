@@ -13,6 +13,7 @@ import {
   Animated,
   ToastAndroid,
   Image,
+  StatusBar,
 } from 'react-native';
 import { register } from '../api/authService';
 import { RegisterRequest } from '../types/registerRequest.interface';
@@ -195,7 +196,7 @@ export default function RegisterScreen({ navigation }: any) {
   }, [fadeAnim, bounceAnim]);
 
   const FormAnimate = useRef(new Animated.Value(500)).current;
-  
+
   useEffect(() => {
     Animated.timing(FormAnimate, {
       toValue: 0,
@@ -205,115 +206,119 @@ export default function RegisterScreen({ navigation }: any) {
   }, [FormAnimate]);
 
   return (
-    <LinearGradient
-      colors={GRADIENT_COLORS}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.fullScreen}
-    >
-      <Image
-        source={BackgroundAbstract}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      />
-      <KeyboardAvoidingView
-        style={styles.overlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      <LinearGradient
+        colors={GRADIENT_COLORS}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fullScreen}
       >
-        <ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
+        <Image
+          source={BackgroundAbstract}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
+        <KeyboardAvoidingView
+          style={styles.overlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          <Animated.View
-            style={[
-              styles.formContainer,
-              { transform: [{ translateY: FormAnimate }] },
-            ]}
+          <ScrollView
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
           >
-            <Animated.Image
-              source={require('../assets/images/avion.png')}
+            <Animated.View
               style={[
-                styles.Image,
-                { opacity: fadeAnim, transform: [{ scale: bounceAnim }] },
+                styles.formContainer,
+                { transform: [{ translateY: FormAnimate }] },
               ]}
-            />
-
-            <Text style={styles.title}>Crear Cuenta</Text>
-            <Text style={styles.subtitle}>
-              Completa tus datos para registrarte
-            </Text>
-
-            {/* Información Personal */}
-            <Text style={styles.sectionTitle}>Información Personal</Text>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Nombre</Text>
-              <TextInput
-                style={[styles.input, errors.name && styles.inputError]}
-                value={formData.name}
-                onChangeText={value => updateField('name', value)}
-                placeholder="Ingresa tu nombre"
-                autoCapitalize="words"
-              />
-              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-            </View>
-
-
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={[styles.input, errors.email && styles.inputError]}
-                value={formData.email}
-                onChangeText={value => updateField('email', value)}
-                placeholder="tu@email.com"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              {errors.email && (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              )}
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Contraseña</Text>
-              <TextInput
-                style={[styles.input, errors.password && styles.inputError]}
-                value={formData.password}
-                onChangeText={value => updateField('password', value)}
-                placeholder="Mínimo 8 caracteres"
-                secureTextEntry
-              />
-              {errors.password && (
-                <Text style={styles.errorText}>{errors.password}</Text>
-              )}
-            </View>
-
-            {/* Botón de registro */}
-            <TouchableOpacity
-              style={[styles.registerButton, loading && styles.buttonDisabled]}
-              onPress={handleRegister}
-              disabled={loading}
             >
-              <Text style={styles.registerButtonText}>
-                {loading ? 'Registrando...' : 'Crear Cuenta'}
-              </Text>
-            </TouchableOpacity>
+              <Animated.Image
+                source={require('../assets/images/avion.png')}
+                style={[
+                  styles.Image,
+                  { opacity: fadeAnim, transform: [{ scale: bounceAnim }] },
+                ]}
+              />
 
-            {/* Link a login */}
-            <TouchableOpacity
-              style={styles.loginLink}
-              onPress={() => navigation.navigate('Login')}
-            >
-              <Text style={styles.loginLinkText}>
-                ¿Ya tienes cuenta?{' '}
-                <Text style={styles.loginLinkTextBold}>Inicia sesión</Text>
+              <Text style={styles.title}>Crear Cuenta</Text>
+              <Text style={styles.subtitle}>
+                Completa tus datos para registrarte
               </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+
+              {/* Información Personal */}
+              <Text style={styles.sectionTitle}>Información Personal</Text>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Nombre</Text>
+                <TextInput
+                  style={[styles.input, errors.name && styles.inputError]}
+                  value={formData.name}
+                  onChangeText={value => updateField('name', value)}
+                  placeholder="Ingresa tu nombre"
+                  autoCapitalize="words"
+                />
+                {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+              </View>
+
+
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={[styles.input, errors.email && styles.inputError]}
+                  value={formData.email}
+                  onChangeText={value => updateField('email', value)}
+                  placeholder="tu@email.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Contraseña</Text>
+                <TextInput
+                  style={[styles.input, errors.password && styles.inputError]}
+                  value={formData.password}
+                  onChangeText={value => updateField('password', value)}
+                  placeholder="Mínimo 8 caracteres"
+                  secureTextEntry
+                />
+                {errors.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+              </View>
+
+              {/* Botón de registro */}
+              <TouchableOpacity
+                style={[styles.registerButton, loading && styles.buttonDisabled]}
+                onPress={handleRegister}
+                disabled={loading}
+              >
+                <Text style={styles.registerButtonText}>
+                  {loading ? 'Registrando...' : 'Crear Cuenta'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Link a login */}
+              <TouchableOpacity
+                style={styles.loginLink}
+                onPress={() => navigation.navigate('Login')}
+              >
+                <Text style={styles.loginLinkText}>
+                  ¿Ya tienes cuenta?{' '}
+                  <Text style={styles.loginLinkTextBold}>Inicia sesión</Text>
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </LinearGradient>
+    </>
   );
 }
 
@@ -419,42 +424,42 @@ const styles = StyleSheet.create({
     fontWeight: '500', // Mismo peso que el label (500)
     marginBottom: 5,  // Mismo margen inferior que el label (5)
   },
-    registerButton: {
-      backgroundColor: '#68D98C',
-      paddingVertical: 10,
-      paddingHorizontal: 10,
-      borderRadius: 10,
-      marginTop: 30,
-      width: '100%',
-      alignItems: 'center',
-    },
-    buttonDisabled: {
-      backgroundColor: 'white',
-    },
-    registerButtonText: {
-      fontFamily: 'MontserratAlternates-SemiBold',
-      color: 'black',
-      fontSize: 16,
-      textAlign: 'center',
-    },
-    loginLink: {
-      alignItems: 'center',
-      marginTop: 10,
-    },
-    loginLinkText: {
-      fontSize: 14,
-      color: 'white',
-      fontFamily: 'MontserratAlternates-Medium',
+  registerButton: {
+    backgroundColor: '#68D98C',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginTop: 30,
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: 'white',
+  },
+  registerButtonText: {
+    fontFamily: 'MontserratAlternates-SemiBold',
+    color: 'black',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  loginLink: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  loginLinkText: {
+    fontSize: 14,
+    color: 'white',
+    fontFamily: 'MontserratAlternates-Medium',
 
-    },
-    loginLinkTextBold: {
-      color: '#68D98C',
-      fontWeight: '600',
-    },
-    Image: {
-      width: 120,
-      height: 120,
-      marginBottom: 20,
-      resizeMode: 'contain',
-    },
-  });
+  },
+  loginLinkTextBold: {
+    color: '#68D98C',
+    fontWeight: '600',
+  },
+  Image: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    resizeMode: 'contain',
+  },
+});
