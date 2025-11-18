@@ -1,4 +1,4 @@
-package com.sori.ecommerce
+package com.alphabeto.phonexa
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

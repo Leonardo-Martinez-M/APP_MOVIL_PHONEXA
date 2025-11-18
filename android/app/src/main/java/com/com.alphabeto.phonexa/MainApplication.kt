@@ -1,4 +1,4 @@
-package com.sori.ecommerce
+package com.alphabeto.phonexa
 
 import android.app.Application
 import com.facebook.react.PackageList
