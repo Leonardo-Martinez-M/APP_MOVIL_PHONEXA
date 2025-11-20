@@ -137,7 +137,6 @@ const cardStyles = StyleSheet.create({
     textAlign: 'center'
   },
   audioButton: {
-    //backgroundColor: '#00BF63',
     paddingHorizontal: 25,
     paddingVertical: 20,
     borderRadius: 25,
@@ -244,11 +243,20 @@ export default function CardScreen() {
         const data = response.data.data || [];
         console.log(`[API] Datos recibidos exitosamente:`, data.length, 'elementos');
 
+        // Validar que los datos tengan la estructura correcta
+        const validatedData = data.map((item, index) => ({
+          id: item.id || index + 1,
+          text: item.text || '',
+          pronunciation: item.pronunciation || '',
+          audioUrl: item.audioUrl || '',
+          imageUrl: item.imageUrl || ''
+        }));
+
         // Guardar en caché local para futuras sesiones
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(validatedData));
         hasLoadedData.current = true;
 
-        setAlphabetData(data);
+        setAlphabetData(validatedData);
       } else {
         console.warn('[API] API respondió con success=false');
         setAlphabetData([]);
@@ -272,6 +280,11 @@ export default function CardScreen() {
   useEffect(() => {
     fetchAlphabetData();
   }, [fetchAlphabetData]);
+
+  // Calcular el snap interval correctamente
+  const cardWidth = screenWidth * 0.8;
+  const cardMargin = (screenWidth * 0.2) / 4;
+  const snapInterval = cardWidth + (cardMargin * 2);
 
   return (
     <>
@@ -302,9 +315,10 @@ export default function CardScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               pagingEnabled
-              snapToInterval={screenWidth}
+              snapToInterval={snapInterval}
               snapToAlignment="center"
               decelerationRate="fast"
+              disableIntervalMomentum={true}
             >
               {alphabetData.map((card) => (
                 <AlphabetCardIntegrated
@@ -340,7 +354,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: 'center',
     paddingBottom: 150,
-    paddingHorizontal: (screenWidth - (screenWidth * 0.8)) / 2,
+    paddingHorizontal: (screenWidth * 0.2) / 4,
   },
   loadingContainer: {
     flex: 1,

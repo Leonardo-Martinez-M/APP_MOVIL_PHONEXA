@@ -107,3 +107,6 @@ To learn more about React Native, take a look at the following resources:
 #PARA EJECUTAR 
 npx react-native run-android
 adb reverse tcp:8081 tcp:8081
+
+Despues de crear el aab de pruebas se necesita especificar el proyecto que queremos ejecutar 
+npx react-native run-android --mode=ProductionDebug 

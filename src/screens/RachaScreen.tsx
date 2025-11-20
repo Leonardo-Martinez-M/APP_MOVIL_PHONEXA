@@ -61,13 +61,8 @@ export default function StreakScreen({ route, navigation }: any) {
 
   const handleNewGame = () => {
     console.log('[STREAK] Iniciando nuevo juego');
-    navigation.replace('Quiz', { savedStreak: 0 });
+    navigation.replace('Quiz', { savedStreak: 0, timestamp: Date.now(), resetGame: true });
   };
-
-  // const handleGoHome = () => {
-  //   console.log('[STREAK] Navegando a Home');
-  //   navigation.navigate('Home');
-  // };
 
   // Determinar qué animación mostrar
   const showFireAnimation = streak > 0;

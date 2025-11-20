@@ -9,4 +9,5 @@ export type RootStackParamList = {
   Racha: undefined;
   Home: undefined;
   Logout: undefined; 
+  Memory: undefined;
 };

@@ -14,6 +14,7 @@ import { LoginRequest } from '../types/loginRequest.interface';
 import CardScreen from '../screens/CardScreen';
 import StreakScreen from '../screens/RachaScreen';
 import HomeScreen from '../screens/HomeScreen';
+import MemoryScreen from '../screens/MemoryScreen';
 
 
 type AuthContextType = {
@@ -91,6 +92,7 @@ export default function AppNavigator() {
               <Stack.Screen name='Logout' component={LogoutScreen} />
               <Stack.Screen name='Racha' component={StreakScreen} />
               <Stack.Screen name='Card' component={CardScreen} />
+              <Stack.Screen name='Memory' component={MemoryScreen} />
 
             </>
           ) : (

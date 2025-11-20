@@ -18,6 +18,7 @@ import httpClient from '../api/http';
 import Sound from 'react-native-sound';
 import { SvgUri } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLORS } from '../constants/colors';
 
 const { width: screenWidth } = Dimensions.get('window');
 const GRADIENT_COLORS = ['#00BF63', '#0A4C40'];
@@ -41,9 +42,6 @@ type QuizResponse = {
 
 // --- Constantes de Almacenamiento ---
 const USED_QUESTIONS_KEY = '@UsedQuestions';
-
-// Contador global de solicitudes
-let apiRequestCount = 0;
 
 // --- Componente Principal ---
 export default function QuizScreen({ navigation, route }: any) {
@@ -71,7 +69,7 @@ export default function QuizScreen({ navigation, route }: any) {
     if (questionTimerRef.current) clearTimeout(questionTimerRef.current);
 
     console.log('[QUIZ] Guardando y saliendo - Racha:', streak);
-    navigation.navigate('Racha', {
+    navigation.replace('Racha', {
       streak,
       savedStreak: streak,
     });
@@ -111,69 +109,71 @@ export default function QuizScreen({ navigation, route }: any) {
     }
   }, []);
 
-  // --- Fetch de pregunta optimizado ---
-  const fetchRandomQuestion = useCallback(async () => {
-    // Evitar múltiples cargas
-    if (hasLoadedInitialData.current && currentQuestion) {
-      return;
+// --- Fetch de pregunta optimizado y corregido ---
+const fetchRandomQuestion = useCallback(async () => {
+  try {
+    setLoading(true);
+
+    // Cargar preguntas usadas solo si está vacío
+    if (usedQuestions.current.length === 0) {
+      await loadUsedQuestions();
     }
 
-    try {
-      setLoading(true);
-      console.log('[QUIZ] Iniciando carga de pregunta...');
+    let attempts = 0;
+    const maxAttempts = 5;
+    let questionData: QuestionType | null = null;
 
-      // Cargar preguntas usadas si es la primera vez
-      if (!hasLoadedInitialData.current) {
-        await loadUsedQuestions();
-      }
-
-      apiRequestCount++;
-      console.log(`[API] Realizando solicitud a la API (#${apiRequestCount})...`);
-
+    // Buscar pregunta no repetida
+    while (attempts < maxAttempts) {
       const response = await httpClient.get<QuizResponse>('/aeronautical-alphabet/quiz/random');
 
-      if (!response.data.success) {
+      if (response.data.success) {
+        questionData = response.data.data;
+
+        if (!usedQuestions.current.includes(questionData.id)) {
+          break; // Encontramos una pregunta nueva
+        }
+        
+        console.log('[QUIZ] Pregunta repetida, intentando otra...');
+        attempts++;
+      } else {
         throw new Error('API respondió con success=false');
       }
-
-      const questionData = response.data.data;
-      console.log('[QUIZ] Pregunta recibida:', questionData.id);
-
-      // Verificar si la pregunta ya fue usada
-      if (usedQuestions.current.includes(questionData.id)) {
-        console.log('[QUIZ] Pregunta repetida, solicitando otra...');
-        // Recursión limitada
-        if (usedQuestions.current.length < 50) {
-          fetchRandomQuestion();
-        } else {
-          // Resetear preguntas usadas si hay demasiadas
-          usedQuestions.current = [];
-          setCurrentQuestion(questionData);
-          usedQuestions.current.push(questionData.id);
-        }
-        return;
-      }
-
-      // Actualizar estado
-      setCurrentQuestion(questionData);
-      setSelectedOption(null);
-      setAnswered(false);
-      setTimeLeft(30);
-      setShowContinueScreen(false);
-
-      // Guardar pregunta como usada
-      usedQuestions.current.push(questionData.id);
-      saveUsedQuestions();
-
-      hasLoadedInitialData.current = true;
-
-    } catch (error) {
-      console.error('[QUIZ] Error al obtener pregunta:', error);
-      Alert.alert('Error', 'No se pudo cargar la pregunta');
-    } finally {
-      setLoading(false);
     }
-  }, [currentQuestion, loadUsedQuestions, saveUsedQuestions]);
+
+    if (!questionData) {
+      // Si no encontramos pregunta nueva después de varios intentos, resetear usedQuestions
+      console.log('[QUIZ] Resetendo preguntas usadas por muchas repeticiones');
+      usedQuestions.current = [];
+      const response = await httpClient.get<QuizResponse>('/aeronautical-alphabet/quiz/random');
+      if (response.data.success) {
+        questionData = response.data.data;
+      } else {
+        throw new Error('No se pudo obtener pregunta después del reset');
+      }
+    }
+
+    // Actualizar estado
+    setCurrentQuestion(questionData);
+    setSelectedOption(null);
+    setAnswered(false);
+    setTimeLeft(30);
+    setShowContinueScreen(false);
+
+    // Guardar pregunta con límite de 30
+    if (usedQuestions.current.length >= 30) {
+      usedQuestions.current = usedQuestions.current.slice(-29);
+    }
+    usedQuestions.current.push(questionData.id);
+    await saveUsedQuestions();
+
+  } catch (error) {
+    console.error('[QUIZ] Error al obtener pregunta:', error);
+    Alert.alert('Error', 'No se pudo cargar la pregunta');
+  } finally {
+    setLoading(false);
+  }
+}, [loadUsedQuestions, saveUsedQuestions]);
 
   // --- useEffects ---
   // Bloquear botón "Atrás"
@@ -264,10 +264,12 @@ export default function QuizScreen({ navigation, route }: any) {
     // Limpiar timer de continuación
     if (continueTimerRef.current) {
       clearTimeout(continueTimerRef.current);
+      continueTimerRef.current = null;
     }
 
     setShowContinueScreen(false);
     setContinueTimeLeft(15);
+
     fetchRandomQuestion();
   };
 
@@ -444,7 +446,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   questionCard: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.darkGreen,
+    borderColor: 'rgba(255, 255, 255, 0.3)',    
     borderRadius: 30,
     padding: 25,
     alignItems: 'center',
@@ -453,7 +456,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
     width: screenWidth * 0.9,
     maxWidth: 400,
   },
@@ -471,7 +473,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 15,
     fontFamily: 'MontserratAlternates-SemiBold',
-    color: '#0A4C40',
+    color: COLORS.white,
     textAlign: 'center',
     marginBottom: 25,
     lineHeight: 28,
